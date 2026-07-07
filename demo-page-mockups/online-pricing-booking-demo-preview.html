@@ -1,0 +1,547 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Greg's Tyres Online Pricing Demo Preview</title>
+  <style>
+    :root {
+      --red: #e60012;
+      --red-dark: #bd0010;
+      --ink: #111111;
+      --muted: #667085;
+      --line: #d8dee8;
+      --soft: #f5f7fa;
+      --white: #ffffff;
+      --green: #147a45;
+      --blue: #164b99;
+      --amber: #a15c00;
+      --shadow: 0 16px 36px rgba(17, 24, 39, .08);
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      background: #f3f5f7;
+      color: var(--ink);
+      font-family: "Open Sans", Arial, sans-serif;
+    }
+
+    header {
+      height: 82px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 24px;
+      padding: 14px 44px;
+      background: var(--white);
+      border-bottom: 1px solid var(--line);
+      box-shadow: 0 3px 14px rgba(17, 24, 39, .05);
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 18px;
+    }
+
+    .brand img {
+      width: 148px;
+      height: auto;
+      display: block;
+    }
+
+    .brand-copy {
+      padding-left: 18px;
+      border-left: 1px solid var(--line);
+    }
+
+    .brand-copy span {
+      display: block;
+      color: var(--red);
+      font-size: 12px;
+      font-weight: 900;
+      text-transform: uppercase;
+    }
+
+    .brand-copy strong {
+      display: block;
+      margin-top: 3px;
+      font-size: 20px;
+      line-height: 1.15;
+    }
+
+    .header-actions {
+      display: flex;
+      gap: 10px;
+      align-items: center;
+    }
+
+    .pill {
+      min-height: 32px;
+      display: inline-flex;
+      align-items: center;
+      padding: 4px 11px;
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      background: #fff;
+      color: #344054;
+      font-size: 12px;
+      font-weight: 800;
+      white-space: nowrap;
+    }
+
+    main {
+      max-width: 1180px;
+      margin: 0 auto;
+      padding: 34px 24px 48px;
+    }
+
+    .hero {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) 320px;
+      gap: 20px;
+      align-items: end;
+      margin-bottom: 18px;
+    }
+
+    h1 {
+      margin: 0;
+      font-size: 34px;
+      line-height: 1.1;
+      letter-spacing: 0;
+    }
+
+    .hero p {
+      max-width: 720px;
+      margin: 10px 0 0;
+      color: #475467;
+      font-size: 16px;
+      line-height: 1.45;
+    }
+
+    .guardrail {
+      padding: 16px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: #fff;
+      box-shadow: var(--shadow);
+    }
+
+    .guardrail span {
+      display: block;
+      color: var(--muted);
+      font-size: 12px;
+      font-weight: 900;
+      text-transform: uppercase;
+    }
+
+    .guardrail strong {
+      display: block;
+      margin-top: 6px;
+      color: var(--green);
+      font-size: 19px;
+    }
+
+    .layout {
+      display: grid;
+      grid-template-columns: 410px minmax(0, 1fr);
+      gap: 18px;
+      align-items: start;
+    }
+
+    .panel {
+      overflow: hidden;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: #fff;
+      box-shadow: var(--shadow);
+    }
+
+    .panel-head {
+      padding: 19px 21px 15px;
+      border-bottom: 1px solid #edf0f4;
+    }
+
+    .panel-head h2 {
+      margin: 0;
+      font-size: 21px;
+      line-height: 1.15;
+    }
+
+    .panel-head p {
+      margin: 5px 0 0;
+      color: var(--muted);
+      font-size: 13px;
+    }
+
+    .panel-body {
+      padding: 19px 21px 21px;
+    }
+
+    .form-grid {
+      display: grid;
+      gap: 13px;
+    }
+
+    label {
+      display: grid;
+      gap: 7px;
+      color: var(--ink);
+      font-size: 13px;
+      font-weight: 900;
+    }
+
+    input, select {
+      width: 100%;
+      min-height: 43px;
+      padding: 0 12px;
+      border: 1px solid #cbd3df;
+      border-radius: 6px;
+      background: #fff;
+      color: var(--ink);
+      font: inherit;
+      font-weight: 700;
+    }
+
+    .choice-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 8px;
+    }
+
+    .choice {
+      min-height: 41px;
+      display: flex;
+      align-items: center;
+      padding: 8px 10px;
+      border: 1px solid #cbd3df;
+      border-radius: 6px;
+      background: #fff;
+      color: #1f2937;
+      font-size: 13px;
+      font-weight: 900;
+    }
+
+    .choice.active {
+      border-color: var(--red);
+      background: #fff1f2;
+      color: var(--red-dark);
+    }
+
+    .primary-btn {
+      width: 100%;
+      min-height: 45px;
+      border: 0;
+      border-radius: 6px;
+      background: var(--red);
+      color: #fff;
+      font: inherit;
+      font-weight: 900;
+    }
+
+    .right-stack {
+      display: grid;
+      gap: 16px;
+    }
+
+    .option {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) 132px;
+      gap: 16px;
+      align-items: center;
+      padding: 18px 20px;
+      border-bottom: 1px solid #edf0f4;
+    }
+
+    .option:first-child {
+      background: #fff9f9;
+      box-shadow: inset 4px 0 0 var(--red);
+    }
+
+    .option:last-child {
+      border-bottom: 0;
+    }
+
+    .tag {
+      display: inline-flex;
+      min-height: 23px;
+      align-items: center;
+      padding: 3px 8px;
+      border-radius: 999px;
+      background: #eaf0ff;
+      color: var(--blue);
+      font-size: 11px;
+      font-weight: 900;
+      text-transform: uppercase;
+    }
+
+    .option:first-child .tag {
+      background: #ffe6e9;
+      color: var(--red-dark);
+    }
+
+    .option h3 {
+      margin: 8px 0 0;
+      font-size: 19px;
+      line-height: 1.15;
+    }
+
+    .option p {
+      margin: 6px 0 0;
+      color: #475467;
+      font-size: 14px;
+      line-height: 1.35;
+    }
+
+    .meta {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 7px;
+      margin-top: 10px;
+    }
+
+    .mini {
+      min-height: 25px;
+      display: inline-flex;
+      align-items: center;
+      padding: 3px 8px;
+      border: 1px solid #d8dde5;
+      border-radius: 999px;
+      color: #344054;
+      font-size: 12px;
+      font-weight: 800;
+      white-space: nowrap;
+    }
+
+    .mini.green { color: var(--green); border-color: #b8e3c8; }
+    .mini.amber { color: var(--amber); border-color: #f2d3a5; }
+
+    .price {
+      text-align: right;
+    }
+
+    .price strong {
+      display: block;
+      font-size: 25px;
+      line-height: 1;
+    }
+
+    .price span {
+      display: block;
+      margin-top: 5px;
+      color: var(--muted);
+      font-size: 12px;
+      font-weight: 700;
+    }
+
+    .actions {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 10px;
+    }
+
+    .action-card {
+      min-height: 76px;
+      padding: 12px;
+      border: 1px solid #cbd3df;
+      border-radius: 8px;
+      background: #fff;
+    }
+
+    .action-card strong {
+      display: block;
+      font-size: 14px;
+    }
+
+    .action-card span {
+      display: block;
+      margin-top: 4px;
+      color: var(--muted);
+      font-size: 12px;
+      font-weight: 700;
+    }
+
+    .modal-preview {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+      padding: 18px 20px;
+      background: #fbfcfd;
+      border-top: 1px solid #edf0f4;
+    }
+
+    .record {
+      padding: 14px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: #fff;
+    }
+
+    .record h3 {
+      margin: 0 0 10px;
+      font-size: 16px;
+    }
+
+    .row {
+      display: flex;
+      justify-content: space-between;
+      gap: 12px;
+      padding: 8px 0;
+      border-bottom: 1px solid #edf0f4;
+      font-size: 13px;
+    }
+
+    .row:last-child {
+      border-bottom: 0;
+    }
+
+    .sms {
+      padding: 13px;
+      border-radius: 12px;
+      background: #f2f4f7;
+      color: #344054;
+      font-size: 13px;
+      line-height: 1.4;
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="brand">
+      <img src="https://gregstyres.com.au/_next/image?url=%2Fbrand%20logos%2FTypeA-Service-Sponsorship-Logo.png&w=640&q=75" alt="Greg's Tyres and Mechanical logo">
+      <div class="brand-copy">
+        <span>Customer demo page</span>
+        <strong>Online Pricing + Booking Engine</strong>
+      </div>
+    </div>
+    <div class="header-actions">
+      <span class="pill">Website quote path</span>
+      <span class="pill">Staff confirmation rules</span>
+      <span class="pill">CRM follow-up</span>
+    </div>
+  </header>
+
+  <main>
+    <section class="hero">
+      <div>
+        <h1>Get guided tyre options before you call.</h1>
+        <p>A customer-facing version of the quote engine: simple jobs can request a quote or hold a booking time, while complex fitment, towing, farm and stock-risk cases go to staff confirmation.</p>
+      </div>
+      <aside class="guardrail">
+        <span>Booking guardrail</span>
+        <strong>Provisional until staff confirms</strong>
+      </aside>
+    </section>
+
+    <section class="layout">
+      <article class="panel">
+        <div class="panel-head">
+          <h2>Find tyres for your vehicle</h2>
+          <p>Customer enters the minimum detail needed to return useful options.</p>
+        </div>
+        <div class="panel-body">
+          <div class="form-grid">
+            <label>Vehicle or rego
+              <input value="Toyota Hilux SR5">
+            </label>
+            <label>Tyre size
+              <select><option>265/65R17</option></select>
+            </label>
+            <label>Driving type
+              <div class="choice-grid">
+                <div class="choice active">Rural roads</div>
+                <div class="choice">Daily driving</div>
+                <div class="choice">4WD / towing</div>
+                <div class="choice">Farm / field</div>
+              </div>
+            </label>
+            <label>Priority
+              <select><option>Best value</option></select>
+            </label>
+            <label>Preferred time
+              <select><option>Thursday morning</option></select>
+            </label>
+            <button class="primary-btn">Check tyre options</button>
+          </div>
+        </div>
+      </article>
+
+      <div class="right-stack">
+        <article class="panel">
+          <div class="panel-head">
+            <h2>Recommended options</h2>
+            <p>Shown as website-friendly pricing, with staff review where needed.</p>
+          </div>
+          <div class="option">
+            <div>
+              <span class="tag">Best value</span>
+              <h3>Hankook Dynapro AT2</h3>
+              <p>Good all-round option for rural roads without jumping to premium pricing.</p>
+              <div class="meta">
+                <span class="mini green">Available tomorrow</span>
+                <span class="mini">Supplier stock: 8</span>
+                <span class="mini">Quote confidence: High</span>
+              </div>
+            </div>
+            <div class="price"><strong>$252</strong><span>per tyre estimate</span></div>
+          </div>
+          <div class="option">
+            <div>
+              <span class="tag">Premium</span>
+              <h3>Bridgestone Dueler A/T 697</h3>
+              <p>Known-brand option for mixed road use, towing and stronger local confidence.</p>
+              <div class="meta">
+                <span class="mini green">4 in local stock</span>
+                <span class="mini">Staff can confirm today</span>
+              </div>
+            </div>
+            <div class="price"><strong>$319</strong><span>per tyre estimate</span></div>
+          </div>
+          <div class="option">
+            <div>
+              <span class="tag">Review required</span>
+              <h3>Toyo Open Country A/T III</h3>
+              <p>Heavy-use option. Staff confirmation needed before booking due to supplier stock.</p>
+              <div class="meta">
+                <span class="mini amber">Check supplier</span>
+                <span class="mini">Fitment review</span>
+              </div>
+            </div>
+            <div class="price"><strong>$325</strong><span>per tyre estimate</span></div>
+          </div>
+        </article>
+
+        <article class="panel">
+          <div class="panel-head">
+            <h2>Next actions</h2>
+            <p>The demo page would open real output modals, matching the quote desk pattern.</p>
+          </div>
+          <div class="panel-body">
+            <div class="actions">
+              <div class="action-card"><strong>Request quote</strong><span>Creates CRM quote lead</span></div>
+              <div class="action-card"><strong>Hold booking time</strong><span>Pending staff confirmation</span></div>
+              <div class="action-card"><strong>Ask a question</strong><span>Sends context to staff</span></div>
+            </div>
+          </div>
+          <div class="modal-preview">
+            <div class="record">
+              <h3>Quote request record</h3>
+              <div class="row"><span>Customer</span><strong>Ben Taylor</strong></div>
+              <div class="row"><span>Vehicle</span><strong>Toyota Hilux SR5</strong></div>
+              <div class="row"><span>Selected</span><strong>Hankook Dynapro AT2</strong></div>
+              <div class="row"><span>Status</span><strong>CRM lead created</strong></div>
+            </div>
+            <div class="record">
+              <h3>Customer SMS preview</h3>
+              <div class="sms">Hi Ben, Greg's Tyres has prepared tyre options for your Hilux. Best value estimate: Hankook Dynapro AT2 at $252 per tyre. Reply YES to request a booking time or call us to confirm stock.</div>
+            </div>
+          </div>
+        </article>
+      </div>
+    </section>
+  </main>
+</body>
+</html>

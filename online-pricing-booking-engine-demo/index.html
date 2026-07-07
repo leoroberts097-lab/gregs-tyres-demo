@@ -1,0 +1,1358 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Online Tyre Quote | Greg's Tyres &amp; Mechanical</title>
+  <meta name="description" content="Simple customer-facing online tyre quote and booking request demo for Greg's Tyres & Mechanical.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@600;700;800;900&family=Open+Sans:wght@400;600;700;800&display=swap" rel="stylesheet">
+  <link rel="icon" href="https://gregstyres.com.au/favicon.ico">
+  <style>
+    :root {
+      --red: #e60012;
+      --red-dark: #c50010;
+      --black: #000000;
+      --ink: #111111;
+      --body: #333333;
+      --muted: #667085;
+      --line: #d9dee7;
+      --soft: #f7f8fa;
+      --white: #ffffff;
+      --green: #137a45;
+      --bad: #b42318;
+      --shadow: 0 16px 34px rgba(15, 23, 42, 0.10);
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    html {
+      scroll-behavior: smooth;
+    }
+
+    body {
+      margin: 0;
+      overflow-x: hidden;
+      background: var(--white);
+      color: var(--body);
+      font-family: "Open Sans", Arial, sans-serif;
+      line-height: 1.5;
+      letter-spacing: 0;
+    }
+
+    body.modal-open {
+      overflow: hidden;
+    }
+
+    img {
+      max-width: 100%;
+      display: block;
+    }
+
+    h1,
+    h2,
+    h3,
+    p {
+      margin: 0;
+    }
+
+    h1,
+    h2,
+    h3,
+    .btn,
+    .nav a,
+    label,
+    .eyebrow {
+      font-family: "Montserrat", "Open Sans", Arial, sans-serif;
+    }
+
+    button,
+    input {
+      font: inherit;
+    }
+
+    button {
+      cursor: pointer;
+    }
+
+    a {
+      color: inherit;
+    }
+
+    .container {
+      width: min(1180px, calc(100% - 32px));
+      margin: 0 auto;
+    }
+
+    .site-header {
+      position: sticky;
+      top: 0;
+      z-index: 40;
+      background: var(--white);
+      box-shadow: 0 4px 18px rgba(17, 24, 39, 0.10);
+    }
+
+    .header-inner {
+      min-height: 94px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 24px;
+      padding: 10px 0;
+    }
+
+    .logo img {
+      width: 168px;
+      height: auto;
+    }
+
+    .nav {
+      display: flex;
+      align-items: center;
+      gap: 24px;
+      color: var(--body);
+      font-weight: 800;
+    }
+
+    .nav a {
+      text-decoration: none;
+      font-size: 14px;
+    }
+
+    .nav a:hover,
+    .nav a:focus-visible {
+      color: var(--red);
+    }
+
+    .header-actions {
+      display: flex;
+      gap: 10px;
+      align-items: center;
+      flex: 0 0 auto;
+    }
+
+    .btn {
+      min-height: 44px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      padding: 11px 18px;
+      border: 2px solid transparent;
+      border-radius: 6px;
+      background: var(--white);
+      color: var(--ink);
+      font-size: 14px;
+      font-weight: 800;
+      line-height: 1.1;
+      text-align: center;
+      text-decoration: none;
+    }
+
+    .btn-primary {
+      background: var(--red);
+      border-color: var(--red);
+      color: var(--white);
+    }
+
+    .btn-primary:hover,
+    .btn-primary:focus-visible {
+      background: var(--red-dark);
+      border-color: var(--red-dark);
+    }
+
+    .btn-secondary {
+      border-color: var(--ink);
+      color: var(--ink);
+    }
+
+    .btn-secondary:hover,
+    .btn-secondary:focus-visible {
+      background: var(--ink);
+      color: var(--white);
+    }
+
+    .hero {
+      position: relative;
+      isolation: isolate;
+      overflow: hidden;
+      border-bottom: 5px solid var(--red);
+      background: #101010;
+      color: var(--white);
+    }
+
+    .hero::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      z-index: -2;
+      background:
+        linear-gradient(90deg, rgba(0, 0, 0, 0.88), rgba(0, 0, 0, 0.66) 48%, rgba(0, 0, 0, 0.24)),
+        url("https://gregstyres.com.au/_next/image?url=%2Fdownload-2.webp&w=1920&q=75") center / cover;
+    }
+
+    .hero-inner {
+      min-height: 430px;
+      display: grid;
+      align-items: center;
+      padding: 58px 0 64px;
+    }
+
+    .hero-copy {
+      width: min(720px, 100%);
+    }
+
+    .eyebrow {
+      margin-bottom: 14px;
+      color: var(--red);
+      font-size: 12px;
+      font-weight: 900;
+      text-transform: uppercase;
+    }
+
+    h1 {
+      color: var(--white);
+      font-size: clamp(2.45rem, 5vw, 4.7rem);
+      line-height: 1.04;
+      font-weight: 900;
+    }
+
+    .red-rule {
+      width: 78px;
+      height: 3px;
+      margin: 22px 0 24px;
+      background: var(--red);
+    }
+
+    .hero p {
+      width: min(620px, 100%);
+      color: #edf0f4;
+      font-size: clamp(1.02rem, 2vw, 1.28rem);
+    }
+
+    .hero-actions,
+    .canvas-strip {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px;
+      align-items: center;
+    }
+
+    .hero-actions {
+      margin-top: 28px;
+    }
+
+    .canvas-strip {
+      justify-content: center;
+      padding: 12px 18px;
+      background: var(--black);
+      color: var(--white);
+      font-size: 13px;
+      font-weight: 800;
+    }
+
+    .canvas-strip a {
+      color: var(--white);
+      text-decoration: underline;
+      text-decoration-thickness: 2px;
+      text-underline-offset: 4px;
+    }
+
+    .section {
+      padding: 66px 0;
+    }
+
+    .section.soft {
+      background: var(--soft);
+    }
+
+    .section-head {
+      max-width: 760px;
+      margin: 0 auto 34px;
+      text-align: center;
+    }
+
+    .section-head h2 {
+      color: var(--ink);
+      font-size: clamp(1.9rem, 3.2vw, 2.9rem);
+      line-height: 1.12;
+      font-weight: 900;
+    }
+
+    .section-head p {
+      margin-top: 12px;
+      color: #5d6675;
+      font-size: 1.03rem;
+    }
+
+    .quote-layout {
+      display: grid;
+      grid-template-columns: minmax(300px, 420px) minmax(0, 1fr);
+      gap: 24px;
+      align-items: start;
+    }
+
+    .panel {
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: var(--white);
+      box-shadow: var(--shadow);
+    }
+
+    .request-panel {
+      padding: 26px;
+    }
+
+    .request-panel h2,
+    .result-panel h2 {
+      color: var(--ink);
+      font-size: 1.7rem;
+      line-height: 1.14;
+      font-weight: 900;
+    }
+
+    .request-panel > p,
+    .result-panel > p {
+      margin-top: 8px;
+      color: #5d6675;
+    }
+
+    .quote-form {
+      display: grid;
+      gap: 16px;
+      margin-top: 22px;
+    }
+
+    .field-row {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 12px;
+    }
+
+    label,
+    .choice-group {
+      display: grid;
+      gap: 7px;
+      color: var(--ink);
+      font-size: 0.86rem;
+      font-weight: 800;
+    }
+
+    input {
+      width: 100%;
+      min-height: 44px;
+      padding: 0 12px;
+      border: 1px solid #cbd3df;
+      border-radius: 6px;
+      background: var(--white);
+      color: var(--ink);
+      outline: none;
+      font-size: 0.98rem;
+      font-weight: 650;
+    }
+
+    input:focus,
+    .choice-button:focus-visible {
+      border-color: var(--red);
+      box-shadow: 0 0 0 3px rgba(230, 0, 18, 0.13);
+    }
+
+    .field-note {
+      color: var(--muted);
+      font-family: "Open Sans", Arial, sans-serif;
+      font-size: 0.78rem;
+      font-weight: 700;
+    }
+
+    .choice-row {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 8px;
+    }
+
+    .choice-button {
+      min-height: 42px;
+      padding: 9px 10px;
+      border: 1px solid #cbd3df;
+      border-radius: 6px;
+      background: var(--white);
+      color: #263241;
+      font-weight: 800;
+      text-align: center;
+    }
+
+    .choice-button.active {
+      border-color: var(--red);
+      background: #fff1f2;
+      color: var(--red-dark);
+    }
+
+    .field-error {
+      min-height: 16px;
+      color: var(--bad);
+      font-family: "Open Sans", Arial, sans-serif;
+      font-size: 0.78rem;
+      font-weight: 800;
+    }
+
+    .has-error input {
+      border-color: var(--bad);
+      background: #fff8f8;
+    }
+
+    .validation {
+      display: none;
+      padding: 11px 12px;
+      border: 1px solid #f2b8be;
+      border-radius: 6px;
+      background: #fff4f5;
+      color: #961b22;
+      font-size: 0.9rem;
+      font-weight: 800;
+    }
+
+    .validation.show {
+      display: block;
+    }
+
+    .result-panel {
+      min-height: 545px;
+      padding: 30px;
+    }
+
+    .empty-state {
+      min-height: 430px;
+      display: grid;
+      place-items: center;
+      text-align: center;
+    }
+
+    .empty-state img {
+      width: min(440px, 100%);
+      aspect-ratio: 5 / 3;
+      border-radius: 8px;
+      object-fit: cover;
+      filter: grayscale(100%);
+    }
+
+    .empty-state h3 {
+      margin-top: 22px;
+      color: var(--ink);
+      font-size: 1.55rem;
+      line-height: 1.18;
+      font-weight: 900;
+    }
+
+    .empty-state p {
+      max-width: 560px;
+      margin: 10px auto 0;
+      color: #5d6675;
+    }
+
+    .recommendation {
+      display: none;
+    }
+
+    .recommendation.show {
+      display: block;
+    }
+
+    .summary-line {
+      padding: 16px 18px;
+      border-left: 4px solid var(--red);
+      background: #fff7f8;
+    }
+
+    .summary-line h3 {
+      color: var(--ink);
+      font-size: 1.32rem;
+      line-height: 1.18;
+      font-weight: 900;
+    }
+
+    .summary-line p {
+      margin-top: 6px;
+      color: #596577;
+    }
+
+    .recommendation-card {
+      margin-top: 20px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      overflow: hidden;
+      background: var(--white);
+    }
+
+    .recommendation-main {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) minmax(170px, 220px);
+      gap: 20px;
+      padding: 22px;
+    }
+
+    .kicker {
+      color: var(--red);
+      font-family: "Montserrat", sans-serif;
+      font-size: 0.76rem;
+      font-weight: 900;
+      text-transform: uppercase;
+    }
+
+    .recommendation-card h3 {
+      margin-top: 4px;
+      color: var(--ink);
+      font-size: 1.55rem;
+      line-height: 1.14;
+      font-weight: 900;
+    }
+
+    .recommendation-card p {
+      margin-top: 10px;
+      color: #4e5a6b;
+    }
+
+    .price-box {
+      display: grid;
+      align-content: start;
+      justify-items: end;
+      text-align: right;
+    }
+
+    .price-box strong {
+      color: var(--ink);
+      font-family: "Montserrat", sans-serif;
+      font-size: 1.65rem;
+      line-height: 1;
+      font-weight: 900;
+    }
+
+    .price-box span {
+      margin-top: 8px;
+      color: var(--muted);
+      font-size: 0.9rem;
+      font-weight: 700;
+    }
+
+    .staff-check {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      border-top: 1px solid #edf0f4;
+      background: var(--soft);
+    }
+
+    .staff-check div {
+      padding: 15px 17px;
+      border-right: 1px solid #edf0f4;
+    }
+
+    .staff-check div:last-child {
+      border-right: 0;
+    }
+
+    .staff-check strong {
+      display: block;
+      color: var(--ink);
+      font-size: 0.88rem;
+      font-weight: 900;
+    }
+
+    .staff-check span {
+      display: block;
+      margin-top: 4px;
+      color: #596577;
+      font-size: 0.86rem;
+    }
+
+    .example-output {
+      margin-top: 18px;
+      padding: 17px 18px;
+      border: 1px solid #dfe4ec;
+      border-radius: 8px;
+      background: #fbfcfd;
+    }
+
+    .example-output h3 {
+      color: var(--ink);
+      font-size: 1rem;
+      font-weight: 900;
+    }
+
+    .example-output p {
+      margin-top: 8px;
+      color: #4e5a6b;
+    }
+
+    .result-actions {
+      margin-top: 20px;
+    }
+
+    .source-flow {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 0;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      overflow: hidden;
+      background: var(--white);
+    }
+
+    .flow-step {
+      min-height: 150px;
+      padding: 23px 20px;
+      border-right: 1px solid var(--line);
+    }
+
+    .flow-step:last-child {
+      border-right: 0;
+    }
+
+    .flow-step span {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 28px;
+      height: 28px;
+      margin-bottom: 14px;
+      background: var(--red);
+      color: var(--white);
+      font-weight: 900;
+    }
+
+    .flow-step h3 {
+      color: var(--ink);
+      font-size: 1.04rem;
+      line-height: 1.22;
+      font-weight: 900;
+    }
+
+    .flow-step p {
+      margin-top: 8px;
+      color: #5d6675;
+      font-size: 0.92rem;
+    }
+
+    .service-strip {
+      display: grid;
+      grid-template-columns: 1.1fr 0.9fr;
+      gap: 30px;
+      align-items: center;
+      padding: 30px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: var(--white);
+      box-shadow: var(--shadow);
+    }
+
+    .service-strip h2 {
+      color: var(--ink);
+      font-size: clamp(1.75rem, 3vw, 2.45rem);
+      line-height: 1.12;
+      font-weight: 900;
+    }
+
+    .service-strip p {
+      margin-top: 13px;
+      color: #5d6675;
+    }
+
+    .service-strip img {
+      width: 100%;
+      aspect-ratio: 16 / 10;
+      border-radius: 8px;
+      object-fit: cover;
+    }
+
+    .footer {
+      padding: 44px 0 24px;
+      background: var(--black);
+      color: var(--white);
+    }
+
+    .footer-grid {
+      display: grid;
+      grid-template-columns: 1.4fr 1fr 1fr;
+      gap: 30px;
+      align-items: start;
+    }
+
+    .footer img {
+      width: 168px;
+      height: auto;
+      margin-bottom: 16px;
+    }
+
+    .footer h3 {
+      margin-bottom: 12px;
+      color: var(--white);
+      font-size: 1rem;
+      font-weight: 900;
+    }
+
+    .footer p,
+    .footer a {
+      color: #d1d5db;
+      font-size: 0.93rem;
+    }
+
+    .footer a:hover,
+    .footer a:focus-visible {
+      color: var(--red);
+    }
+
+    .footer-links {
+      display: grid;
+      gap: 8px;
+    }
+
+    .footer-bottom {
+      margin-top: 30px;
+      padding-top: 20px;
+      border-top: 1px solid #333;
+      color: #9ca3af;
+      font-size: 0.86rem;
+    }
+
+    .modal-backdrop {
+      position: fixed;
+      inset: 0;
+      z-index: 80;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      padding: 18px;
+      background: rgba(0, 0, 0, 0.68);
+    }
+
+    .modal-backdrop.show {
+      display: flex;
+    }
+
+    .modal {
+      width: min(720px, 100%);
+      max-height: calc(100vh - 36px);
+      overflow: auto;
+      border-radius: 8px;
+      background: var(--white);
+      box-shadow: 0 24px 68px rgba(0, 0, 0, 0.30);
+    }
+
+    .modal-head {
+      display: flex;
+      justify-content: space-between;
+      gap: 18px;
+      padding: 24px 26px 18px;
+      border-bottom: 1px solid #edf0f4;
+    }
+
+    .modal h2 {
+      color: var(--ink);
+      font-size: 1.55rem;
+      line-height: 1.16;
+      font-weight: 900;
+    }
+
+    .modal-head p {
+      margin-top: 7px;
+      color: #596577;
+    }
+
+    .modal-close {
+      width: 40px;
+      height: 40px;
+      flex: 0 0 auto;
+      border: 1px solid #cbd3df;
+      border-radius: 6px;
+      background: var(--white);
+      color: var(--ink);
+      font-size: 1.4rem;
+      line-height: 1;
+    }
+
+    .modal-body {
+      display: grid;
+      gap: 16px;
+      padding: 22px 26px 26px;
+    }
+
+    .modal-card {
+      padding: 16px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: #fbfcfd;
+    }
+
+    .modal-card h3 {
+      color: var(--ink);
+      font-size: 1rem;
+      font-weight: 900;
+    }
+
+    .modal-card p {
+      margin-top: 8px;
+      color: #4e5a6b;
+    }
+
+    @media (max-width: 980px) {
+      .header-inner,
+      .quote-layout,
+      .service-strip,
+      .footer-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .header-inner {
+        display: grid;
+        justify-items: center;
+      }
+
+      .source-flow,
+      .staff-check {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+
+      .flow-step:nth-child(2) {
+        border-right: 0;
+      }
+
+      .flow-step:nth-child(1),
+      .flow-step:nth-child(2) {
+        border-bottom: 1px solid var(--line);
+      }
+    }
+
+    @media (max-width: 680px) {
+      .container {
+        width: min(100% - 24px, 1180px);
+      }
+
+      .header-actions,
+      .nav,
+      .hero-actions,
+      .canvas-strip {
+        justify-content: center;
+      }
+
+      .header-actions,
+      .hero-actions {
+        width: 100%;
+      }
+
+      .header-actions .btn,
+      .hero-actions .btn {
+        width: 100%;
+      }
+
+      .nav {
+        flex-wrap: wrap;
+        gap: 14px;
+      }
+
+      .hero::before {
+        background:
+          linear-gradient(rgba(0, 0, 0, 0.76), rgba(0, 0, 0, 0.72)),
+          url("https://gregstyres.com.au/_next/image?url=%2Fdownload-2.webp&w=1080&q=75") center / cover;
+      }
+
+      .hero-inner {
+        min-height: 390px;
+        padding: 44px 0 48px;
+        text-align: center;
+      }
+
+      .red-rule {
+        margin-inline: auto;
+      }
+
+      .section {
+        padding: 48px 0;
+      }
+
+      .request-panel,
+      .result-panel,
+      .service-strip {
+        padding: 20px;
+      }
+
+      .field-row,
+      .choice-row,
+      .recommendation-main,
+      .source-flow,
+      .staff-check {
+        grid-template-columns: 1fr;
+      }
+
+      .flow-step,
+      .staff-check div {
+        border-right: 0;
+        border-bottom: 1px solid var(--line);
+      }
+
+      .flow-step:last-child,
+      .staff-check div:last-child {
+        border-bottom: 0;
+      }
+
+      .price-box {
+        justify-items: start;
+        text-align: left;
+      }
+
+      .footer {
+        text-align: center;
+      }
+
+      .footer img {
+        margin-inline: auto;
+      }
+    }
+  </style>
+</head>
+<body>
+  <header class="site-header">
+    <div class="container header-inner">
+      <a class="logo" href="https://gregstyres.com.au/" target="_blank" rel="noreferrer" aria-label="Open Greg's Tyres website">
+        <img src="https://gregstyres.com.au/_next/image?url=%2Fbrand%20logos%2FTypeA-Service-Sponsorship-Logo.png&w=640&q=75" alt="Greg's Tyres & Mechanical logo">
+      </a>
+      <nav class="nav" aria-label="Page navigation">
+        <a href="#quote">Online Quote</a>
+        <a href="#how">How It Works</a>
+        <a href="#services">Services</a>
+      </nav>
+      <div class="header-actions">
+        <a class="btn btn-secondary" href="../gregs-operations-canvas-demo/index.html#card-online-pricing-booking">Back to canvas</a>
+        <a class="btn btn-primary" href="#quote">Get Tyre Quote</a>
+      </div>
+    </div>
+  </header>
+
+  <main>
+    <section class="hero" aria-labelledby="hero-title">
+      <div class="container hero-inner">
+        <div class="hero-copy">
+          <p class="eyebrow">Greg's Tyres &amp; Mechanical Mudgee</p>
+          <h1 id="hero-title">A simpler way to request tyre pricing</h1>
+          <div class="red-rule"></div>
+          <p>Customers enter the details Greg's team needs. The page gives one sensible recommendation and sends a staff-confirmed quote and booking request.</p>
+          <div class="hero-actions">
+            <a class="btn btn-primary" href="#quote">Start tyre request</a>
+            <a class="btn btn-secondary" href="tel:+61263723277">Call Now</a>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <div class="canvas-strip">
+      <span>Online pricing + booking demo</span>
+      <a href="../gregs-operations-canvas-demo/index.html#card-online-pricing-booking">Back to canvas</a>
+      <a href="../tyre-product-finder-quoting-engine-demo/index.html">Related staff quote demo</a>
+    </div>
+
+    <section class="section" id="quote" aria-labelledby="quote-title">
+      <div class="container">
+        <div class="section-head">
+          <p class="eyebrow">Customer request</p>
+          <h2 id="quote-title">Get the right option without a big form</h2>
+          <p>The customer only answers what affects tyre fitment, price and booking confirmation.</p>
+        </div>
+
+        <div class="quote-layout">
+          <article class="panel request-panel">
+            <h2>Request a quote</h2>
+            <p>Starts blank. Nothing is pre-filled.</p>
+
+            <form class="quote-form" id="quoteForm" novalidate>
+              <div class="validation" id="validation" role="status" aria-live="polite"></div>
+
+              <div class="field-row">
+                <label data-field="vehicle">Rego or vehicle
+                  <input id="vehicle" autocomplete="off">
+                  <span class="field-error" id="vehicleError"></span>
+                </label>
+                <label data-field="size">Tyre size
+                  <input id="size" autocomplete="off">
+                  <span class="field-note">For example: 265/65R17</span>
+                  <span class="field-error" id="sizeError"></span>
+                </label>
+              </div>
+
+              <div class="choice-group" data-field="use">
+                Driving use
+                <div class="choice-row" role="group" aria-label="Driving use">
+                  <button class="choice-button" type="button" data-choice="use" data-value="Daily driving">Daily</button>
+                  <button class="choice-button" type="button" data-choice="use" data-value="Rural roads">Rural roads</button>
+                  <button class="choice-button" type="button" data-choice="use" data-value="4WD or towing">4WD / towing</button>
+                </div>
+                <span class="field-error" id="useError"></span>
+              </div>
+
+              <div class="choice-group" data-field="priority">
+                What matters most?
+                <div class="choice-row" role="group" aria-label="Quote priority">
+                  <button class="choice-button" type="button" data-choice="priority" data-value="Lowest price">Lowest price</button>
+                  <button class="choice-button" type="button" data-choice="priority" data-value="Best value">Best value</button>
+                  <button class="choice-button" type="button" data-choice="priority" data-value="Premium / long life">Long life</button>
+                </div>
+                <span class="field-error" id="priorityError"></span>
+              </div>
+
+              <div class="field-row">
+                <label data-field="name">Name
+                  <input id="name" autocomplete="name">
+                  <span class="field-error" id="nameError"></span>
+                </label>
+                <label data-field="phone">Mobile
+                  <input id="phone" autocomplete="tel" inputmode="tel">
+                  <span class="field-error" id="phoneError"></span>
+                </label>
+              </div>
+
+              <label data-field="time">Preferred day or time
+                <input id="time" autocomplete="off">
+                <span class="field-note">A staff member confirms the actual booking slot.</span>
+                <span class="field-error" id="timeError"></span>
+              </label>
+
+              <button class="btn btn-primary" type="submit">Find my tyre option</button>
+            </form>
+          </article>
+
+          <article class="panel result-panel" id="resultPanel" tabindex="-1">
+            <div class="empty-state" id="emptyState">
+              <div>
+                <img src="https://gregstyres.com.au/_next/image?url=%2Fbridgestone-tyres-burleigh-heads_800x.webp&w=1080&q=75" alt="Tyres ready for fitting">
+                <h3>Your recommendation appears here</h3>
+                <p>The first click checks that enough details are present. Once complete, the customer sees one useful next step.</p>
+              </div>
+            </div>
+
+            <div class="recommendation" id="recommendation" aria-live="polite">
+              <div class="summary-line">
+                <h3 id="summaryTitle">Recommended tyre path</h3>
+                <p id="summaryText"></p>
+              </div>
+
+              <div class="recommendation-card">
+                <div class="recommendation-main">
+                  <div>
+                    <p class="kicker" id="recKicker">Staff-confirmed recommendation</p>
+                    <h3 id="recName">Hankook Dynapro AT2</h3>
+                    <p id="recReason">A strong all-round option for Mudgee roads, utes, rural driving and light towing.</p>
+                  </div>
+                  <div class="price-box">
+                    <strong id="recPrice">$225-$265 each fitted</strong>
+                    <span>Guide only. Greg's confirms price, stock and fitment.</span>
+                  </div>
+                </div>
+                <div class="staff-check">
+                  <div>
+                    <strong>Fitment</strong>
+                    <span id="fitmentText">Vehicle and tyre size checked.</span>
+                  </div>
+                  <div>
+                    <strong>Stock</strong>
+                    <span>Marlin, Bridgestone and supplier availability reviewed.</span>
+                  </div>
+                  <div>
+                    <strong>Booking</strong>
+                    <span id="bookingText">Preferred time held until staff confirm.</span>
+                  </div>
+                </div>
+              </div>
+
+              <div class="example-output">
+                <h3>Customer message preview</h3>
+                <p id="messagePreview">Thanks. Greg's Tyres has your request and will confirm the quote before booking.</p>
+              </div>
+
+              <div class="result-actions">
+                <button class="btn btn-primary" type="button" id="sendRequest">Request quote + hold time</button>
+              </div>
+            </div>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <section class="section soft" id="how" aria-labelledby="how-title">
+      <div class="container">
+        <div class="section-head">
+          <p class="eyebrow">What happens behind the page</p>
+          <h2 id="how-title">One request becomes a staff-ready record</h2>
+        </div>
+
+        <div class="source-flow">
+          <article class="flow-step">
+            <span>1</span>
+            <h3>Customer request</h3>
+            <p>Vehicle, tyre size, use, priority, contact and preferred time.</p>
+          </article>
+          <article class="flow-step">
+            <span>2</span>
+            <h3>Source check</h3>
+            <p>Marlin, Bridgestone, supplier stock and local availability.</p>
+          </article>
+          <article class="flow-step">
+            <span>3</span>
+            <h3>Staff confirmation</h3>
+            <p>Fitment, price, stock and workshop time are checked by Greg's team.</p>
+          </article>
+          <article class="flow-step">
+            <span>4</span>
+            <h3>Quote and booking</h3>
+            <p>The customer gets one clear next step, not a confusing product grid.</p>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <section class="section" id="services" aria-labelledby="services-title">
+      <div class="container">
+        <div class="service-strip">
+          <div>
+            <p class="eyebrow">Greg's services</p>
+            <h2 id="services-title">Made for real Mudgee tyre work</h2>
+            <p>The same clean request can support tyres, 4WD and towing advice, rural-road fitment, commercial vehicles, and jobs that need field-service follow-up. It looks like Greg's website, not a software dashboard.</p>
+          </div>
+          <img src="https://gregstyres.com.au/_next/image?url=%2F4x4.jpg&w=1080&q=75" alt="Greg's Tyres 4WD service">
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="footer">
+    <div class="container">
+      <div class="footer-grid">
+        <div>
+          <img src="https://gregstyres.com.au/_next/image?url=%2Fbrand%20logos%2FTypeA-Service-Sponsorship-Logo-White.png&w=640&q=75" alt="Greg's Tyres & Mechanical logo">
+          <p>Trusted local mechanic and tyre shop in Mudgee, NSW. Bridgestone Service Centre offering quality parts, expert advice and competitive pricing.</p>
+        </div>
+        <div>
+          <h3>Demo Links</h3>
+          <div class="footer-links">
+            <a href="../gregs-operations-canvas-demo/index.html#card-online-pricing-booking">Back to canvas</a>
+            <a href="../tyre-product-finder-quoting-engine-demo/index.html">Staff quote demo</a>
+            <a href="https://gregstyres.com.au/services" target="_blank" rel="noreferrer">Greg's services page</a>
+          </div>
+        </div>
+        <div>
+          <h3>Contact Info</h3>
+          <p>46 Sydney Rd, Mudgee NSW 2850</p>
+          <p>(02) 6372 3277</p>
+          <p>info@gregstyres.com.au</p>
+        </div>
+      </div>
+      <div class="footer-bottom">Simplified online pricing + booking workflow concept.</div>
+    </div>
+  </footer>
+
+  <div class="modal-backdrop" id="modalBackdrop" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
+    <article class="modal">
+      <div class="modal-head">
+        <div>
+          <h2 id="modalTitle">Request sent to Greg's staff</h2>
+          <p>Customer confirmation and staff record are created from the same request.</p>
+        </div>
+        <button class="modal-close" type="button" id="modalClose" aria-label="Close">×</button>
+      </div>
+      <div class="modal-body" id="modalBody"></div>
+    </article>
+  </div>
+
+  <script>
+    const state = {
+      use: "",
+      priority: "",
+      request: null,
+      recommendation: null
+    };
+
+    const recommendations = {
+      budget: {
+        kicker: "Lowest-price option",
+        name: "Supercat H/T",
+        price: "$165-$195 each fitted",
+        reason: "A practical road tyre for daily driving and price-led replacements."
+      },
+      value: {
+        kicker: "Staff-confirmed recommendation",
+        name: "Hankook Dynapro AT2",
+        price: "$225-$265 each fitted",
+        reason: "A strong all-round option for Mudgee roads, utes, rural driving and light towing."
+      },
+      premium: {
+        kicker: "Premium / long-life option",
+        name: "Bridgestone Dueler A/T 697",
+        price: "$285-$335 each fitted",
+        reason: "A durable 4WD and rural-road option where long life and known brand support matter."
+      }
+    };
+
+    const els = {
+      form: document.getElementById("quoteForm"),
+      validation: document.getElementById("validation"),
+      resultPanel: document.getElementById("resultPanel"),
+      emptyState: document.getElementById("emptyState"),
+      recommendation: document.getElementById("recommendation"),
+      summaryText: document.getElementById("summaryText"),
+      recKicker: document.getElementById("recKicker"),
+      recName: document.getElementById("recName"),
+      recReason: document.getElementById("recReason"),
+      recPrice: document.getElementById("recPrice"),
+      fitmentText: document.getElementById("fitmentText"),
+      bookingText: document.getElementById("bookingText"),
+      messagePreview: document.getElementById("messagePreview"),
+      sendRequest: document.getElementById("sendRequest"),
+      modalBackdrop: document.getElementById("modalBackdrop"),
+      modalClose: document.getElementById("modalClose"),
+      modalBody: document.getElementById("modalBody")
+    };
+
+    function getValue(id) {
+      return document.getElementById(id).value.trim();
+    }
+
+    function escapeHtml(value) {
+      return String(value || "").replace(/[&<>"']/g, (char) => ({
+        "&": "&amp;",
+        "<": "&lt;",
+        ">": "&gt;",
+        '"': "&quot;",
+        "'": "&#039;"
+      }[char]));
+    }
+
+    function setError(field, message) {
+      const wrapper = document.querySelector(`[data-field="${field}"]`);
+      const target = document.getElementById(`${field}Error`);
+      if (wrapper) wrapper.classList.toggle("has-error", Boolean(message));
+      if (target) target.textContent = message || "";
+    }
+
+    function clearErrors() {
+      ["vehicle", "size", "use", "priority", "name", "phone", "time"].forEach((field) => setError(field, ""));
+      els.validation.classList.remove("show");
+      els.validation.textContent = "";
+    }
+
+    function currentRequest() {
+      return {
+        vehicle: getValue("vehicle"),
+        size: getValue("size"),
+        use: state.use,
+        priority: state.priority,
+        name: getValue("name"),
+        phone: getValue("phone"),
+        time: getValue("time")
+      };
+    }
+
+    function validate() {
+      const request = currentRequest();
+      const required = [
+        ["vehicle", "Add a rego or vehicle."],
+        ["size", "Add the tyre size."],
+        ["use", "Choose the driving use."],
+        ["priority", "Choose what matters most."],
+        ["name", "Add a name."],
+        ["phone", "Add a mobile number."],
+        ["time", "Add a preferred day or time."]
+      ];
+
+      clearErrors();
+      const missing = required.filter(([field]) => !request[field]);
+      missing.forEach(([field, message]) => setError(field, message));
+
+      if (missing.length) {
+        els.validation.textContent = `Please complete ${missing.length} item${missing.length === 1 ? "" : "s"} before showing a tyre option.`;
+        els.validation.classList.add("show");
+        const first = document.querySelector(`[data-field="${missing[0][0]}"]`);
+        if (first) first.scrollIntoView({ behavior: "smooth", block: "center" });
+        return null;
+      }
+
+      return request;
+    }
+
+    function chooseRecommendation(request) {
+      if (request.priority === "Lowest price") return recommendations.budget;
+      if (request.priority === "Premium / long life") return recommendations.premium;
+      if (request.use === "4WD or towing" || request.use === "Rural roads") return recommendations.value;
+      return recommendations.value;
+    }
+
+    function showRecommendation(request) {
+      const rec = chooseRecommendation(request);
+      state.request = request;
+      state.recommendation = rec;
+
+      els.summaryText.textContent = `${request.vehicle} | ${request.size} | ${request.use} | ${request.priority} | preferred ${request.time}.`;
+      els.recKicker.textContent = rec.kicker;
+      els.recName.textContent = rec.name;
+      els.recReason.textContent = rec.reason;
+      els.recPrice.textContent = rec.price;
+      els.fitmentText.textContent = `${request.vehicle} and ${request.size} checked before staff confirm.`;
+      els.bookingText.textContent = `${request.time} is used as a requested slot, not a guaranteed booking.`;
+      els.messagePreview.textContent = `Thanks ${request.name}. Greg's Tyres has your ${request.size} request for ${request.vehicle}. Staff will confirm ${rec.name}, stock and a booking time before sending the quote.`;
+
+      els.emptyState.style.display = "none";
+      els.recommendation.classList.add("show");
+      els.resultPanel.focus({ preventScroll: true });
+      els.resultPanel.scrollIntoView({ behavior: "smooth", block: "start" });
+    }
+
+    document.querySelectorAll("[data-choice]").forEach((button) => {
+      button.addEventListener("click", () => {
+        const group = button.dataset.choice;
+        state[group] = button.dataset.value;
+        document.querySelectorAll(`[data-choice="${group}"]`).forEach((item) => item.classList.remove("active"));
+        button.classList.add("active");
+        setError(group, "");
+      });
+    });
+
+    els.form.addEventListener("submit", (event) => {
+      event.preventDefault();
+      const request = validate();
+      if (request) showRecommendation(request);
+    });
+
+    els.sendRequest.addEventListener("click", () => {
+      const request = state.request || validate();
+      if (!request) return;
+      const rec = state.recommendation || chooseRecommendation(request);
+
+      els.modalBody.innerHTML = `
+        <div class="modal-card">
+          <h3>Customer confirmation</h3>
+          <p>Thanks ${escapeHtml(request.name)}. Greg's Tyres has your quote request for ${escapeHtml(request.vehicle)} using ${escapeHtml(request.size)} tyres. Staff will confirm ${escapeHtml(rec.name)}, price, stock and the requested time before booking.</p>
+        </div>
+        <div class="modal-card">
+          <h3>Staff record</h3>
+          <p><strong>Quote:</strong> ${escapeHtml(rec.name)} (${escapeHtml(rec.price)})</p>
+          <p><strong>Check:</strong> Marlin, Bridgestone, supplier stock, fitment/load suitability and requested time: ${escapeHtml(request.time)}.</p>
+          <p><strong>Next step:</strong> send quote link or call the customer if the job needs advice.</p>
+        </div>
+      `;
+      els.modalBackdrop.classList.add("show");
+      document.body.classList.add("modal-open");
+      els.modalClose.focus();
+    });
+
+    function closeModal() {
+      els.modalBackdrop.classList.remove("show");
+      document.body.classList.remove("modal-open");
+      els.sendRequest.focus();
+    }
+
+    els.modalClose.addEventListener("click", closeModal);
+    els.modalBackdrop.addEventListener("click", (event) => {
+      if (event.target === els.modalBackdrop) closeModal();
+    });
+    document.addEventListener("keydown", (event) => {
+      if (event.key === "Escape" && els.modalBackdrop.classList.contains("show")) closeModal();
+    });
+  </script>
+</body>
+</html>

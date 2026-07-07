@@ -1,0 +1,255 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Greg's Tyres Operating System Map</title>
+  <meta name="description" content="Presentation canvas for Greg's Tyres quoting, online pricing, follow-up, supplier decisions, staff knowledge, owner visibility and audit path.">
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' fill='%23ffffff'/%3E%3Ctext x='32' y='39' text-anchor='middle' font-family='Arial' font-size='20' font-weight='900' fill='%23e60012'%3EGT%3C/text%3E%3C/svg%3E">
+  <style>
+    :root {
+      --red: #e60012;
+      --red-dark: #bf0010;
+      --ink: #111111;
+      --body: #333333;
+      --muted: #667085;
+      --line: #d8dde6;
+      --paper: #ffffff;
+      --canvas: #f3f5f7;
+      --soft: #f8fafc;
+      --green: #137a45;
+      --blue: #164b99;
+      --amber: #a15c00;
+      --bad: #b42318;
+      --shadow: 0 16px 36px rgba(17, 24, 39, 0.08);
+      --radius: 8px;
+    }
+    * { box-sizing: border-box; }
+    html { min-height: 100%; background: var(--canvas); color: var(--body); font-family: "Open Sans", Arial, sans-serif; letter-spacing: 0; }
+    body { min-height: 100%; margin: 0; background: var(--canvas); overflow: hidden; }
+    h1, h2, h3, p { margin: 0; }
+    button, a { font: inherit; }
+    button { cursor: pointer; }
+    a { color: inherit; }
+    .topbar { position: fixed; top: 0; left: 0; right: 0; z-index: 20; height: 78px; display: flex; align-items: center; justify-content: space-between; gap: 18px; padding: 10px 24px; background: rgba(255,255,255,.98); border-bottom: 1px solid var(--line); box-shadow: 0 3px 14px rgba(17,24,39,.05); }
+    .brand { min-width: 0; display: flex; align-items: center; gap: 16px; }
+    .brand img { width: 142px; height: auto; display: block; object-fit: contain; }
+    .brand-copy { min-width: 0; padding-left: 16px; border-left: 1px solid var(--line); }
+    .brand-copy h1 { margin-top: 2px; color: var(--ink); font-size: 19px; line-height: 1.15; font-weight: 900; }
+    .brand-copy p { margin-top: 3px; max-width: 680px; color: var(--muted); font-size: 12px; line-height: 1.35; }
+    .whai-logo { width: 64px; height: 64px; display: block; object-fit: contain; border-radius: 6px; }
+    .controls { display: flex; align-items: center; justify-content: flex-end; gap: 8px; flex-wrap: wrap; }
+    .control-btn { min-height: 34px; padding: 0 11px; border: 1px solid #cbd3df; border-radius: 6px; background: #fff; color: #344054; font-size: 12px; font-weight: 900; white-space: nowrap; }
+    .control-btn.primary { border-color: var(--red); background: var(--red); color: #fff; }
+    .zoom-readout { min-width: 52px; color: var(--muted); font-size: 12px; font-weight: 900; text-align: center; }
+    .canvas-shell { position: fixed; inset: 78px 0 0 0; overflow: hidden; background: linear-gradient(rgba(17,24,39,.045) 1px, transparent 1px), linear-gradient(90deg, rgba(17,24,39,.045) 1px, transparent 1px), var(--canvas); background-size: 40px 40px; touch-action: none; cursor: grab; }
+    .canvas-shell.dragging { cursor: grabbing; }
+    .board { position: absolute; left: 0; top: 0; width: 2250px; height: 1290px; transform-origin: 0 0; transition: transform 220ms ease; }
+    .canvas-shell.dragging .board { transition: none; }
+    .band-title { position: absolute; left: 80px; width: 2090px; color: rgba(17,17,17,.24); font-size: 28px; line-height: 1; font-weight: 900; text-transform: uppercase; pointer-events: none; }
+    .section-card, .node, .audit-step { position: absolute; border: 2px solid #cbd3df; border-radius: var(--radius); background: var(--paper); box-shadow: var(--shadow); color: var(--body); text-align: left; }
+    .section-card { width: 620px; min-height: 190px; padding: 20px; }
+    .section-card h2, .node h2, .audit-step h3 { color: var(--ink); font-size: 22px; line-height: 1.12; font-weight: 900; }
+    .section-card p, .node p, .audit-step p { margin-top: 8px; color: #475467; font-size: 14px; line-height: 1.38; }
+    .kicker { display: none; }
+    .fact-list, .flow-list { display: grid; gap: 8px; margin: 14px 0 0; padding: 0; list-style: none; }
+    .fact-list li { display: grid; grid-template-columns: 12px minmax(0,1fr); gap: 9px; color: #344054; font-size: 13px; line-height: 1.35; }
+    .fact-list li::before { content: ""; width: 8px; height: 8px; margin-top: 5px; border-radius: 50%; background: var(--red); }
+    .connector-layer { position: absolute; inset: 0; width: 2250px; height: 1290px; overflow: visible; pointer-events: none; }
+    .connector { fill: none; stroke: #b5bdc9; stroke-width: 4; stroke-linecap: round; stroke-dasharray: 10 10; }
+    .connector.primary { stroke: var(--red); stroke-dasharray: none; stroke-width: 5; }
+    .node { width: 420px; min-height: 245px; display: grid; grid-template-rows: auto 1fr auto; overflow: hidden; }
+    .node-hub { width: 500px; min-height: 295px; border-color: var(--red); box-shadow: 0 24px 54px rgba(230,0,18,.12); }
+    .node-head { padding: 17px 20px 14px; border-bottom: 1px solid #edf0f4; background: #fff; }
+    .node-body { padding: 14px 20px 10px; }
+    .node:not(.node-hub) .audit-line { display: none; }
+    .flow-item { display: grid; grid-template-columns: 26px minmax(0,1fr); gap: 10px; align-items: start; color: #344054; font-size: 13px; line-height: 1.32; }
+    .flow-item span:first-child { width: 26px; height: 26px; display: grid; place-items: center; border-radius: 50%; background: var(--soft); color: var(--ink); font-size: 12px; font-weight: 900; }
+    .audit-line { margin-top: 12px; padding-top: 10px; border-top: 1px solid #edf0f4; color: #475467; font-size: 12px; line-height: 1.35; }
+    .node-foot { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 0 20px 16px; }
+    .node:not(.node-hub) .node-foot { border-top: 1px solid #edf0f4; padding-top: 12px; }
+    .demo-link, .planned-label { min-height: 34px; display: inline-flex; align-items: center; justify-content: center; padding: 0 12px; border-radius: 6px; font-size: 12px; font-weight: 900; text-decoration: none; white-space: nowrap; }
+    .demo-link { border: 1px solid var(--red); background: var(--red); color: #fff; }
+    .planned-label { border: 1px solid #cbd3df; background: #fff; color: #475467; }
+    .audit-step { width: 370px; min-height: 96px; padding: 16px; }
+    .audit-step h3 { font-size: 19px; }
+    .audit-note { position: absolute; left: 80px; top: 1220px; width: 2090px; min-height: 54px; padding: 14px 18px; border: 2px dashed #cbd3df; border-radius: var(--radius); background: rgba(255,255,255,.78); color: #475467; font-size: 14px; line-height: 1.36; }
+    .audit-note strong { display: block; margin-bottom: 4px; color: var(--ink); }
+    .board.view-all .section-card { min-height: 138px; }
+    .board.view-all .section-card .fact-list,
+    .board.view-all .node-body,
+    .board.view-all .audit-step p { display: none; }
+    .board.view-all .node { min-height: 150px; }
+    .board.view-all .node-hub { min-height: 172px; }
+    .board.view-all .node-head { border-bottom: 0; }
+    .board.view-all .node-foot { padding-top: 0; }
+    .board.view-all .audit-step { min-height: 56px; }
+    .board.focus-mode .node:not(.is-focused),
+    .board.focus-mode .section-card:not(.is-focused),
+    .board.focus-mode .audit-step:not(.is-focused) { opacity: 0.2; }
+    .board.focus-mode .is-focused { z-index: 10; opacity: 1; box-shadow: 0 28px 70px rgba(17, 24, 39, 0.22); }
+    @media (max-width: 820px) {
+      .topbar { height: 106px; display: grid; grid-template-columns: minmax(0,1fr) auto; align-content: center; padding: 10px 14px; }
+      .brand { display: grid; grid-template-columns: 92px minmax(0,1fr); gap: 12px; }
+      .brand img { width: 90px; }
+      .brand-copy { padding-left: 12px; }
+      .brand-copy h1 { font-size: 16px; }
+      .brand-copy p { font-size: 11px; }
+      .whai-logo { width: 48px; height: 48px; }
+      .canvas-shell { inset: 106px 0 0 0; }
+    }
+  </style>
+</head>
+<body>
+  <header class="topbar">
+    <div class="brand">
+      <img src="https://gregstyres.com.au/_next/image?url=%2Fbrand%20logos%2FTypeA-Service-Sponsorship-Logo.png&w=640&q=75" alt="Greg's Tyres and Mechanical logo">
+      <div class="brand-copy">
+        <h1>Greg's Tyres</h1>
+        <p>Rough basic pre-audit demo for scoped work</p>
+      </div>
+    </div>
+    <img class="whai-logo" src="../assets/whitehorse-ai-logo-mark.png" alt="WhiteHorse AI logo">
+  </header>
+
+  <main class="canvas-shell" id="canvasShell" aria-label="Greg's Tyres operating system canvas">
+    <section class="board" id="board">
+      <div class="band-title" style="top:48px;">Owner context</div>
+      <article class="section-card" style="left:80px;top:86px;" data-focus="context">
+        <span class="kicker">Owner goals</span>
+        <h2>Growth needs structure, not just more sales</h2>
+        <p>Greg's is already a strong local business. The map shows how the quote engine can become part of a broader operating structure.</p>
+        <ul class="fact-list">
+          <li>About $3.5m current turnover and roughly 9 employees.</li>
+          <li>About $5m may be close to the workshop and space ceiling.</li>
+          <li>Goal is easier training, cleaner management and a business less dependent on a few key people.</li>
+        </ul>
+      </article>
+      <article class="section-card" style="left:815px;top:86px;" data-focus="state">
+        <span class="kicker">Current state</span>
+        <h2>Marlin, suppliers and staff knowledge all matter</h2>
+        <p>Marlin remains part of the environment, but the friction is around product choice, quoting confidence, supplier complexity and knowledge sitting in people's heads.</p>
+        <ul class="fact-list">
+          <li>Bridgestone Service Centre in Mudgee, not a franchise.</li>
+          <li>Front-desk tyre and fitment knowledge is concentrated in experienced staff.</li>
+          <li>The website is closer to a contact path than a pricing or booking path today.</li>
+        </ul>
+      </article>
+      <article class="section-card" style="left:1550px;top:86px;" data-focus="auditframing">
+        <span class="kicker">Audit framing</span>
+        <h2>This is a diagnostic map, not fixed build scope</h2>
+        <p>The audit tests data access, workflow volume, staff adoption risk, Marlin constraints, supplier portal access, ROI and build complexity before recommending what to build first.</p>
+        <ul class="fact-list">
+          <li>Workflow options are ranked before build decisions.</li>
+          <li>Online pricing keeps staff review for complex or risky jobs.</li>
+          <li>Supplier integration is not promised until access is validated.</li>
+        </ul>
+      </article>
+
+      <div class="band-title" style="top:310px;">Workflow map</div>
+      <svg class="connector-layer" viewBox="0 0 2250 1290" aria-hidden="true">
+        <path class="connector primary" d="M1125 500 L1125 545"></path>
+        <path class="connector primary" d="M875 630 C730 620 615 600 470 575"></path>
+        <path class="connector primary" d="M1375 630 C1520 620 1635 600 1780 575"></path>
+        <path class="connector" d="M875 710 C720 730 610 775 460 835"></path>
+        <path class="connector" d="M1375 710 C1530 730 1640 775 1790 835"></path>
+        <path class="connector" d="M1020 717 C965 780 930 825 900 870"></path>
+        <path class="connector" d="M1230 717 C1285 780 1315 825 1345 870"></path>
+      </svg>
+
+      <article class="node node-hub" id="card-staff-quote-engine" style="left:875px;top:545px;" data-focus="hub">
+        <div class="node-head"><h2>Quote Engine Core</h2><p>Staff enter the quote once. The system checks Marlin/Bridgestone, supplier portals, local stock and margin rules, then produces a customer-ready quote and internal record.</p></div>
+        <div class="node-body"><div class="flow-list"><div class="flow-item"><span>1</span><div>Enter customer, vehicle, tyre size and driving use.</div></div><div class="flow-item"><span>2</span><div>Compare supplier options, stock, margin and fitment.</div></div><div class="flow-item"><span>3</span><div>Publish quote to customer message, CRM/Marlin note and booking workflow.</div></div></div><div class="audit-line">Existing working demo: Greg's Tyres Quote Desk.</div></div>
+        <div class="node-foot"><a class="demo-link" href="../tyre-product-finder-quoting-engine-demo/index.html" target="_blank" rel="noreferrer">Open demo</a></div>
+      </article>
+
+      <article class="node green" id="card-online-pricing-booking" style="left:895px;top:350px;" data-focus="online">
+        <div class="node-head"><h2>Online Pricing + Booking Engine</h2><p>Customer-facing version of the quote engine on Greg's website, with staff confirmation for complex jobs.</p></div>
+        <div class="node-body"><div class="flow-list"><div class="flow-item"><span>1</span><div>Customer enters rego, vehicle or tyre size.</div></div><div class="flow-item"><span>2</span><div>System shows 2-3 guided options with guardrails.</div></div><div class="flow-item"><span>3</span><div>Customer requests a quote, asks a question or holds a booking time.</div></div></div><div class="audit-line">Audit test: decide which quote types are safe online and which need human review.</div></div>
+        <div class="node-foot"><a class="demo-link" href="../online-pricing-booking-engine-demo/index.html" target="_blank" rel="noreferrer">Open demo</a></div>
+      </article>
+
+      <article class="node blue" id="card-follow-up-crm" style="left:260px;top:455px;" data-focus="followup">
+        <div class="node-head"><h2>Customer Follow-Up + Lifecycle CRM</h2><p>Every quote and completed job becomes a managed customer journey.</p></div>
+        <div class="node-body"><div class="flow-list"><div class="flow-item"><span>1</span><div>Quote sent but not booked triggers follow-up.</div></div><div class="flow-item"><span>2</span><div>Booked jobs trigger review and service reminders.</div></div><div class="flow-item"><span>3</span><div>Past customers feed win-back and lifecycle campaigns.</div></div></div><div class="audit-line">Audit test: measure quote leakage, response rates and missed follow-up.</div></div>
+        <div class="node-foot"><a class="demo-link" href="../customer-follow-up-lifecycle-crm-demo/index.html" target="_blank" rel="noreferrer">Open demo</a></div>
+      </article>
+
+      <article class="node amber" id="card-local-marketing-reputation" style="left:1570px;top:455px;" data-focus="marketing">
+        <div class="node-head"><h2>Local Marketing + Reputation</h2><p>Use real quote and job data to drive local campaigns and review requests.</p></div>
+        <div class="node-body"><div class="flow-list"><div class="flow-item"><span>1</span><div>Segment customers by vehicle, job type and status.</div></div><div class="flow-item"><span>2</span><div>Trigger 4WD, farm, fleet, rego, battery and win-back campaigns.</div></div><div class="flow-item"><span>3</span><div>Request reviews after completed jobs, with an internal path for unhappy customers.</div></div></div><div class="audit-line">Audit test: confirm data availability and approval gates.</div></div>
+        <div class="node-foot"><a class="demo-link" href="../local-campaign-approval-demo/index.html" target="_blank" rel="noreferrer">Open demo</a></div>
+      </article>
+
+      <article class="node green" id="card-supplier-stock-margin" style="left:250px;top:750px;" data-focus="supplier">
+        <div class="node-head"><h2>Supplier, Stock + Margin Intelligence</h2><p>Help Greg's decide what to quote, what to hold locally and where margin is leaking.</p></div>
+        <div class="node-body"><div class="flow-list"><div class="flow-item"><span>1</span><div>Compare supplier cost, stock and sell price.</div></div><div class="flow-item"><span>2</span><div>Track common tyre sizes and unavailable products.</div></div><div class="flow-item"><span>3</span><div>Suggest preferred quote options, stock rules and margin alerts.</div></div></div><div class="audit-line">Audit test: validate supplier data access, stock exports and pricing-change frequency.</div></div>
+        <div class="node-foot"><a class="demo-link" href="../supplier-stock-margin-intelligence-demo/index.html" target="_blank" rel="noreferrer">Open demo</a></div>
+      </article>
+
+      <article class="node" id="card-technician-job-handoff" style="left:1580px;top:750px;" data-focus="handoff">
+        <div class="node-head"><h2>Technician Job Handoff</h2><p>Turn accepted quotes into clean workshop job notes.</p></div>
+        <div class="node-body"><div class="flow-list"><div class="flow-item"><span>1</span><div>Accepted quote automatically creates the workshop job card.</div></div><div class="flow-item"><span>2</span><div>Card includes tyre, vehicle, stock source, fitment warnings and upsell prompts.</div></div><div class="flow-item"><span>3</span><div>Completion updates the customer record, review path and next reminder.</div></div></div><div class="audit-line">Audit test: watch front-desk-to-workshop handoff and identify missing information or rework risk.</div></div>
+        <div class="node-foot"><a class="demo-link" href="../technician-job-handoff-demo/index.html" target="_blank" rel="noreferrer">Open demo</a></div>
+      </article>
+
+      <article class="node blue" id="card-staff-knowledge-training" style="left:705px;top:870px;" data-focus="knowledge">
+        <div class="node-head"><h2>Staff Knowledge + Technical Training Loop</h2><p>Capture one lesson from real work, approve it, and file it back into quoting, pricing guardrails, handoff and training.</p></div>
+        <div class="node-body"><div class="flow-list"><div class="flow-item"><span>1</span><div>Experienced staff capture what happened, why it mattered and what should change.</div></div><div class="flow-item"><span>2</span><div>AI files the approved lesson into the right rule, SOP, pricing guardrail or handoff note.</div></div><div class="flow-item"><span>3</span><div>Senior staff still approve the rule before it affects the business.</div></div></div><div class="audit-line">Audit test: identify which lessons are worth turning into reusable business structure.</div></div>
+        <div class="node-foot"><a class="demo-link" href="../staff-knowledge-training-loop-demo/index.html" target="_blank" rel="noreferrer">Open demo</a></div>
+      </article>
+
+      <article class="node blue" id="card-owner-view-franchise-readiness" style="left:1135px;top:870px;" data-focus="owner">
+        <div class="node-head"><h2>Owner View + Franchise Readiness</h2><p>Give Mel/Nick simple visibility across quoting, follow-up, stock, staff knowledge and workflow gaps.</p></div>
+        <div class="node-body"><div class="flow-list"><div class="flow-item"><span>1</span><div>Quote, job and follow-up data feed a simple weekly owner view.</div></div><div class="flow-item"><span>2</span><div>Owners see open issues, lost quote reasons, margin watchlists and SOP approvals.</div></div><div class="flow-item"><span>3</span><div>The business becomes easier to train, audit, sell, replicate or franchise.</div></div></div><div class="audit-line">Audit test: identify the few owner-level numbers that actually change decisions each week.</div></div>
+        <div class="node-foot"><a class="demo-link" href="../owner-view-franchise-readiness-demo/index.html" target="_blank" rel="noreferrer">Open demo</a></div>
+      </article>
+
+      <div class="band-title" style="top:1120px;">Audit process: how we decide what to build first</div>
+      <article class="audit-step" style="left:80px;top:1155px;" data-focus="audit"><h3>1. Interview</h3><p>Owners, front desk, technicians and admin clarify current process.</p></article>
+      <article class="audit-step" style="left:510px;top:1155px;"><h3>2. Observe workflows</h3><p>Quote, supplier, booking and workshop handoff steps are documented.</p></article>
+      <article class="audit-step" style="left:940px;top:1155px;"><h3>3. Review systems</h3><p>Marlin, supplier portals, website, spreadsheets and stock data are checked.</p></article>
+      <article class="audit-step" style="left:1370px;top:1155px;"><h3>4. Score options</h3><p>Workflows are ranked by ROI, effort, data access and adoption risk.</p></article>
+      <article class="audit-step" style="left:1800px;top:1155px;"><h3>5. Roadmap</h3><p>Greg's receives the recommended first build and implementation path.</p></article>
+    </section>
+  </main>
+
+  <script>
+    const shell = document.getElementById("canvasShell");
+    const board = document.getElementById("board");
+    const zoomReadout = document.getElementById("zoomReadout");
+    const BOARD_W = 2250;
+    const BOARD_H = 1290;
+    const state = { scale: 0.48, x: 0, y: 0, dragging: false, dragStartX: 0, dragStartY: 0, startX: 0, startY: 0, active: "all" };
+    function clamp(value, min, max) { return Math.min(max, Math.max(min, value)); }
+    function applyTransform() {
+      board.style.transform = `translate(${state.x}px, ${state.y}px) scale(${state.scale})`;
+      if (zoomReadout) zoomReadout.textContent = `${Math.round(state.scale * 100)}%`;
+    }
+    function setActive(target) {
+      state.active = target;
+      board.classList.toggle("view-all", target === "all");
+      board.classList.toggle("focus-mode", target !== "all" && target !== "custom");
+      document.querySelectorAll(".is-focused").forEach(element => element.classList.remove("is-focused"));
+      if (target !== "all" && target !== "custom") {
+        const focused = document.querySelector(`[data-focus="${target}"]`);
+        if (focused) focused.classList.add("is-focused");
+      }
+    }
+    function fitToView() { const rect = shell.getBoundingClientRect(); const nextScale = Math.min((rect.width - 110) / BOARD_W, (rect.height - 90) / BOARD_H, 0.68); state.scale = clamp(nextScale, 0.1, 0.68); state.x = (rect.width - BOARD_W * state.scale) / 2; state.y = (rect.height - BOARD_H * state.scale) / 2; setActive("all"); applyTransform(); }
+    function focusNode(target) { const node = document.querySelector(`[data-focus="${target}"]`); if (!node) return fitToView(); const rect = shell.getBoundingClientRect(); const nodeX = node.offsetLeft + node.offsetWidth / 2; const nodeY = node.offsetTop + node.offsetHeight / 2; const preferredScale = target === "hub" ? 1.02 : target === "audit" ? 0.8 : 1.05; state.scale = clamp(Math.min(preferredScale, (rect.width - 90) / node.offsetWidth, (rect.height - 90) / node.offsetHeight), 0.32, 1.22); state.x = rect.width / 2 - nodeX * state.scale; state.y = rect.height / 2 - nodeY * state.scale; setActive(target); applyTransform(); }
+    function focusHashTarget() { const id = window.location.hash.slice(1); if (!id) return false; const node = document.getElementById(id); if (!node || !node.dataset.focus) return false; focusNode(node.dataset.focus); return true; }
+    function zoomBy(delta) { const rect = shell.getBoundingClientRect(); const oldScale = state.scale; const nextScale = clamp(state.scale + delta, 0.1, 1.4); const cx = rect.width / 2; const cy = rect.height / 2; const boardCx = (cx - state.x) / oldScale; const boardCy = (cy - state.y) / oldScale; state.scale = nextScale; state.x = cx - boardCx * nextScale; state.y = cy - boardCy * nextScale; applyTransform(); }
+    document.querySelectorAll("[data-target]").forEach(button => button.addEventListener("click", () => button.dataset.target === "all" ? fitToView() : focusNode(button.dataset.target)));
+    document.querySelectorAll(".node, .section-card, .audit-step").forEach(node => node.addEventListener("click", event => { if (event.target.closest("a")) return; if (node.dataset.focus) focusNode(node.dataset.focus); }));
+    shell.addEventListener("pointerdown", event => { if (event.button !== 0 || event.target.closest("a,button,.node,.section-card,.audit-step")) return; state.dragging = true; state.dragStartX = event.clientX; state.dragStartY = event.clientY; state.startX = state.x; state.startY = state.y; shell.classList.add("dragging"); shell.setPointerCapture(event.pointerId); });
+    shell.addEventListener("pointermove", event => { if (!state.dragging) return; state.x = state.startX + event.clientX - state.dragStartX; state.y = state.startY + event.clientY - state.dragStartY; applyTransform(); });
+    shell.addEventListener("pointerup", event => { state.dragging = false; shell.classList.remove("dragging"); if (shell.hasPointerCapture(event.pointerId)) shell.releasePointerCapture(event.pointerId); });
+    shell.addEventListener("wheel", event => { event.preventDefault(); zoomBy(event.deltaY > 0 ? -0.07 : 0.07); }, { passive: false });
+    window.addEventListener("resize", () => state.active === "all" ? fitToView() : state.active !== "custom" && focusNode(state.active));
+    window.addEventListener("hashchange", () => { if (!focusHashTarget()) fitToView(); });
+    fitToView();
+    window.setTimeout(focusHashTarget, 80);
+  </script>
+</body>
+</html>

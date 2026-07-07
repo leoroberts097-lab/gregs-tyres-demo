@@ -1,0 +1,1419 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Greg's Tyres Quote Desk Demo</title>
+  <meta name="description" content="A simple Greg's Tyres quote desk demo with supplier checks, quote publishing and customer message preview.">
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' fill='%23ffffff'/%3E%3Ctext x='32' y='39' text-anchor='middle' font-family='Arial' font-size='20' font-weight='900' fill='%23e60012'%3EGT%3C/text%3E%3C/svg%3E">
+  <style>
+    :root {
+      --red: #e60012;
+      --red-dark: #bf0010;
+      --ink: #111111;
+      --body: #333333;
+      --muted: #667085;
+      --line: #d7dde6;
+      --soft: #f5f6f8;
+      --page: #f3f5f7;
+      --white: #ffffff;
+      --green: #137a45;
+      --blue: #164b99;
+      --amber: #a15c00;
+      --shadow: 0 12px 28px rgba(17, 24, 39, 0.07);
+      --radius: 8px;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    html {
+      min-height: 100%;
+      background: var(--page);
+      color: var(--body);
+      font-family: "Open Sans", Arial, sans-serif;
+      letter-spacing: 0;
+    }
+
+    body {
+      margin: 0;
+      min-height: 100%;
+      background: var(--page);
+      line-height: 1.42;
+    }
+
+    h1,
+    h2,
+    h3,
+    p {
+      margin: 0;
+    }
+
+    button,
+    input,
+    select,
+    textarea {
+      font: inherit;
+    }
+
+    button {
+      cursor: pointer;
+    }
+
+    .site-header {
+      background: var(--white);
+      border-bottom: 1px solid var(--line);
+      box-shadow: 0 3px 12px rgba(17, 24, 39, 0.05);
+    }
+
+    .header-inner {
+      max-width: 1160px;
+      margin: 0 auto;
+      padding: 17px 22px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 18px;
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      min-width: 0;
+      gap: 16px;
+    }
+
+    .brand img {
+      width: 148px;
+      height: auto;
+      display: block;
+      object-fit: contain;
+    }
+
+    .brand-copy {
+      min-width: 0;
+      padding-left: 16px;
+      border-left: 1px solid var(--line);
+    }
+
+    .brand-copy span {
+      display: block;
+      color: var(--red);
+      font-size: 12px;
+      font-weight: 900;
+      text-transform: uppercase;
+    }
+
+    .brand-copy strong {
+      display: block;
+      margin-top: 2px;
+      color: var(--ink);
+      font-size: 19px;
+      line-height: 1.2;
+    }
+
+    .header-status {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: flex-end;
+      gap: 8px;
+    }
+
+    .status-pill {
+      min-height: 30px;
+      display: inline-flex;
+      align-items: center;
+      padding: 4px 10px;
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      background: #fff;
+      color: #344054;
+      font-size: 12px;
+      font-weight: 800;
+      white-space: nowrap;
+    }
+
+    .page {
+      max-width: 1160px;
+      margin: 0 auto;
+      padding: 24px 22px 46px;
+    }
+
+    .desk-head {
+      display: flex;
+      align-items: end;
+      justify-content: space-between;
+      gap: 18px;
+      margin-bottom: 16px;
+    }
+
+    .desk-head h1 {
+      color: var(--ink);
+      font-size: 24px;
+      line-height: 1.15;
+      font-weight: 900;
+    }
+
+    .desk-head p {
+      margin-top: 4px;
+      color: var(--muted);
+      font-size: 14px;
+    }
+
+    .save-indicator {
+      padding: 10px 12px;
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      background: #fff;
+      color: var(--muted);
+      font-size: 13px;
+      font-weight: 800;
+      white-space: nowrap;
+    }
+
+    .save-indicator strong {
+      color: var(--green);
+    }
+
+    .desk {
+      display: grid;
+      grid-template-columns: minmax(340px, 410px) minmax(0, 1fr);
+      gap: 18px;
+      align-items: start;
+    }
+
+    .panel {
+      background: var(--white);
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      overflow: hidden;
+    }
+
+    .panel-head {
+      padding: 18px 20px 14px;
+      border-bottom: 1px solid #edf0f4;
+      background: #fff;
+    }
+
+    .panel-head h2 {
+      color: var(--ink);
+      font-size: 20px;
+      line-height: 1.2;
+      font-weight: 900;
+    }
+
+    .panel-head p {
+      margin-top: 4px;
+      color: var(--muted);
+      font-size: 13px;
+    }
+
+    .panel-body {
+      padding: 18px 20px 20px;
+    }
+
+    .form-grid {
+      display: grid;
+      gap: 13px;
+    }
+
+    label {
+      display: grid;
+      gap: 6px;
+      color: var(--ink);
+      font-size: 13px;
+      font-weight: 900;
+    }
+
+    input,
+    select,
+    textarea {
+      width: 100%;
+      border: 1px solid #cbd3df;
+      border-radius: 6px;
+      background: #fff;
+      color: var(--ink);
+      outline: none;
+      font-size: 15px;
+    }
+
+    input,
+    select {
+      min-height: 42px;
+      padding: 0 11px;
+    }
+
+    textarea {
+      min-height: 72px;
+      padding: 10px 11px;
+      resize: vertical;
+    }
+
+    input:focus,
+    select:focus,
+    textarea:focus {
+      border-color: var(--red);
+      box-shadow: 0 0 0 3px rgba(230, 0, 18, 0.12);
+    }
+
+    .choice-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 8px;
+    }
+
+    .choice {
+      min-height: 40px;
+      padding: 8px 10px;
+      border: 1px solid #cbd3df;
+      border-radius: 6px;
+      background: #fff;
+      color: #1f2937;
+      font-size: 13px;
+      font-weight: 900;
+      text-align: left;
+    }
+
+    .choice.active {
+      border-color: var(--red);
+      background: #fff1f2;
+      color: var(--red-dark);
+    }
+
+    .primary-btn,
+    .plain-btn,
+    .action-btn {
+      min-height: 42px;
+      border-radius: 6px;
+      font-weight: 900;
+      border: 1px solid transparent;
+    }
+
+    .primary-btn {
+      width: 100%;
+      background: var(--red);
+      color: #fff;
+    }
+
+    .primary-btn:hover,
+    .primary-btn:focus-visible {
+      background: var(--red-dark);
+    }
+
+    .plain-btn {
+      padding: 0 12px;
+      background: #fff;
+      border-color: #cbd3df;
+      color: var(--ink);
+    }
+
+    .data-box {
+      margin-top: 15px;
+      border: 1px solid #edf0f4;
+      border-radius: var(--radius);
+      overflow: hidden;
+    }
+
+    .data-title {
+      padding: 11px 13px;
+      background: var(--soft);
+      border-bottom: 1px solid #edf0f4;
+      color: var(--ink);
+      font-size: 13px;
+      font-weight: 900;
+    }
+
+    .source-row {
+      display: grid;
+      grid-template-columns: 10px minmax(0, 1fr) auto;
+      gap: 10px;
+      align-items: center;
+      padding: 11px 13px;
+      border-bottom: 1px solid #edf0f4;
+      font-size: 13px;
+    }
+
+    .source-row:last-child {
+      border-bottom: 0;
+    }
+
+    .dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: #98a2b3;
+    }
+
+    .dot.ready {
+      background: var(--green);
+    }
+
+    .dot.warn {
+      background: var(--amber);
+    }
+
+    .source-main strong {
+      display: block;
+      color: var(--ink);
+      font-size: 13px;
+    }
+
+    .source-main span {
+      display: block;
+      color: var(--muted);
+      font-size: 12px;
+    }
+
+    .source-status {
+      padding: 4px 8px;
+      border-radius: 999px;
+      background: #f2f4f7;
+      color: #344054;
+      font-size: 11px;
+      font-weight: 900;
+      white-space: nowrap;
+    }
+
+    .source-status.ready {
+      background: #eaf6ef;
+      color: var(--green);
+    }
+
+    .source-status.warn {
+      background: #fff5e6;
+      color: var(--amber);
+    }
+
+    .right-col {
+      display: grid;
+      gap: 16px;
+    }
+
+    .quote-list {
+      display: grid;
+    }
+
+    .quote-card {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) auto;
+      gap: 16px;
+      align-items: center;
+      padding: 18px 20px;
+      border-bottom: 1px solid #edf0f4;
+      background: #fff;
+    }
+
+    .quote-card:last-child {
+      border-bottom: 0;
+    }
+
+    .quote-card.selected {
+      background: #fff9f9;
+      box-shadow: inset 4px 0 0 var(--red);
+    }
+
+    .quote-label {
+      display: inline-flex;
+      align-items: center;
+      min-height: 24px;
+      margin-bottom: 8px;
+      padding: 3px 8px;
+      border-radius: 999px;
+      background: #eef3ff;
+      color: var(--blue);
+      font-size: 11px;
+      font-weight: 900;
+      text-transform: uppercase;
+    }
+
+    .quote-card.selected .quote-label {
+      background: #ffe6e9;
+      color: var(--red-dark);
+    }
+
+    .quote-card h3 {
+      color: var(--ink);
+      font-size: 19px;
+      line-height: 1.18;
+    }
+
+    .quote-card p {
+      margin-top: 6px;
+      color: #4b5563;
+      font-size: 14px;
+      max-width: 620px;
+    }
+
+    .quote-meta {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-top: 10px;
+    }
+
+    .pill {
+      display: inline-flex;
+      align-items: center;
+      min-height: 25px;
+      padding: 3px 8px;
+      border: 1px solid #d8dde5;
+      border-radius: 999px;
+      background: #fff;
+      color: #344054;
+      font-size: 12px;
+      font-weight: 800;
+      white-space: nowrap;
+    }
+
+    .pill.green {
+      border-color: #b8e3c8;
+      color: var(--green);
+    }
+
+    .price-block {
+      min-width: 126px;
+      text-align: right;
+    }
+
+    .price {
+      display: block;
+      color: var(--ink);
+      font-size: 25px;
+      line-height: 1;
+      font-weight: 900;
+    }
+
+    .price-block small {
+      display: block;
+      margin-top: 4px;
+      color: var(--muted);
+      font-size: 12px;
+    }
+
+    .select-btn {
+      margin-top: 10px;
+      min-height: 34px;
+      padding: 0 12px;
+      border: 1px solid #cbd3df;
+      border-radius: 6px;
+      background: #fff;
+      color: var(--ink);
+      font-size: 12px;
+      font-weight: 900;
+    }
+
+    .quote-card.selected .select-btn {
+      border-color: var(--red);
+      background: var(--red);
+      color: #fff;
+    }
+
+    .action-grid {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 10px;
+    }
+
+    .action-btn {
+      display: grid;
+      justify-items: start;
+      align-content: center;
+      gap: 4px;
+      min-height: 68px;
+      padding: 10px 12px;
+      background: #fff;
+      border-color: #cbd3df;
+      color: var(--ink);
+      text-align: left;
+    }
+
+    .action-btn strong {
+      font-size: 14px;
+    }
+
+    .action-btn span {
+      color: var(--muted);
+      font-size: 12px;
+      font-weight: 700;
+    }
+
+    .output-empty {
+      padding: 18px 20px 22px;
+      color: var(--muted);
+      font-size: 14px;
+    }
+
+    .destination-grid {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 10px;
+      margin-bottom: 16px;
+    }
+
+    .destination {
+      display: grid;
+      grid-template-columns: 40px minmax(0, 1fr);
+      gap: 10px;
+      align-items: center;
+      padding: 10px;
+      border: 1px solid #d8dde5;
+      border-radius: var(--radius);
+      background: #fff;
+    }
+
+    .app-icon {
+      width: 40px;
+      height: 40px;
+      display: grid;
+      place-items: center;
+      border-radius: 8px;
+      background: #f2f4f7;
+      color: var(--ink);
+      font-size: 12px;
+      font-weight: 900;
+    }
+
+    .app-icon.red {
+      background: #ffe6e9;
+      color: var(--red-dark);
+    }
+
+    .app-icon.green {
+      background: #eaf6ef;
+      color: var(--green);
+    }
+
+    .app-icon.blue {
+      background: #eaf0ff;
+      color: var(--blue);
+    }
+
+    .destination strong {
+      display: block;
+      color: var(--ink);
+      font-size: 13px;
+    }
+
+    .destination span {
+      display: block;
+      color: var(--muted);
+      font-size: 12px;
+    }
+
+    .modal-backdrop {
+      position: fixed;
+      inset: 0;
+      z-index: 40;
+      display: none;
+      place-items: center;
+      padding: 20px;
+      background: rgba(17, 24, 39, 0.38);
+    }
+
+    .modal-backdrop.open {
+      display: grid;
+    }
+
+    .modal {
+      width: min(980px, 100%);
+      max-height: calc(100vh - 40px);
+      overflow: auto;
+      border-radius: 10px;
+      background: #fff;
+      box-shadow: 0 28px 70px rgba(17, 24, 39, 0.3);
+    }
+
+    .modal-top {
+      position: sticky;
+      top: 0;
+      z-index: 2;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 12px;
+      padding: 16px 18px;
+      border-bottom: 1px solid var(--line);
+      background: #fff;
+    }
+
+    .modal-top h2 {
+      color: var(--ink);
+      font-size: 20px;
+      line-height: 1.2;
+    }
+
+    .modal-top p {
+      margin-top: 3px;
+      color: var(--muted);
+      font-size: 13px;
+    }
+
+    .close-btn {
+      width: 38px;
+      height: 38px;
+      border: 1px solid #cbd3df;
+      border-radius: 6px;
+      background: #fff;
+      color: var(--ink);
+      font-size: 20px;
+      font-weight: 900;
+    }
+
+    .modal-body {
+      padding: 18px;
+      background: #fbfcfd;
+    }
+
+    .quote-document {
+      display: grid;
+      grid-template-columns: 1.15fr 0.85fr;
+      gap: 14px;
+    }
+
+    .document-card {
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      background: #fff;
+      overflow: hidden;
+    }
+
+    .document-section {
+      padding: 16px;
+      border-bottom: 1px solid #edf0f4;
+    }
+
+    .document-section:last-child {
+      border-bottom: 0;
+    }
+
+    .document-section h3 {
+      color: var(--ink);
+      font-size: 16px;
+      margin-bottom: 10px;
+    }
+
+    .detail-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 10px;
+    }
+
+    .detail {
+      padding: 10px;
+      border: 1px solid #edf0f4;
+      border-radius: 6px;
+      background: #fff;
+    }
+
+    .detail span {
+      display: block;
+      color: var(--muted);
+      font-size: 11px;
+      font-weight: 900;
+      text-transform: uppercase;
+    }
+
+    .detail strong {
+      display: block;
+      margin-top: 3px;
+      color: var(--ink);
+      font-size: 14px;
+    }
+
+    .line-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 14px;
+    }
+
+    .line-table th,
+    .line-table td {
+      padding: 10px 8px;
+      border-bottom: 1px solid #edf0f4;
+      text-align: left;
+      vertical-align: top;
+    }
+
+    .line-table th {
+      color: var(--muted);
+      font-size: 11px;
+      text-transform: uppercase;
+    }
+
+    .line-table td:last-child,
+    .line-table th:last-child {
+      text-align: right;
+    }
+
+    .total-row {
+      display: flex;
+      justify-content: space-between;
+      gap: 12px;
+      padding: 14px 16px;
+      background: #fff9f9;
+      color: var(--ink);
+      font-size: 18px;
+      font-weight: 900;
+    }
+
+    .message-card {
+      padding: 16px;
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      background: #fff;
+    }
+
+    .message-bubble {
+      padding: 14px;
+      border-radius: 12px;
+      background: #f2f4f7;
+      color: #344054;
+      font-size: 14px;
+      white-space: pre-line;
+    }
+
+    .toast {
+      position: fixed;
+      left: 50%;
+      bottom: 22px;
+      z-index: 50;
+      transform: translate(-50%, 18px);
+      max-width: min(520px, calc(100vw - 32px));
+      padding: 12px 14px;
+      border-radius: 7px;
+      background: var(--ink);
+      color: #fff;
+      font-size: 14px;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 160ms ease, transform 160ms ease;
+    }
+
+    .toast.show {
+      opacity: 1;
+      transform: translate(-50%, 0);
+    }
+
+    @media (max-width: 980px) {
+      .header-inner,
+      .desk,
+      .quote-document {
+        display: grid;
+        grid-template-columns: 1fr;
+      }
+
+      .header-inner {
+        align-items: start;
+      }
+
+      .header-status {
+        justify-content: flex-start;
+      }
+    }
+
+    @media (max-width: 720px) {
+      .header-inner {
+        padding: 14px 16px;
+        gap: 10px;
+      }
+
+      .brand {
+        display: grid;
+        grid-template-columns: 96px minmax(0, 1fr);
+        gap: 12px;
+        width: 100%;
+      }
+
+      .brand img {
+        width: 92px;
+      }
+
+      .brand-copy {
+        padding-left: 12px;
+      }
+
+      .brand-copy span {
+        font-size: 10px;
+      }
+
+      .brand-copy strong {
+        font-size: 16px;
+      }
+
+      .page {
+        padding: 16px 14px 34px;
+      }
+
+      .desk-head,
+      .quote-card,
+      .detail-grid,
+      .destination-grid,
+      .action-grid,
+      .choice-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .desk-head {
+        display: grid;
+      }
+
+      .price-block {
+        text-align: left;
+      }
+
+      .source-row {
+        grid-template-columns: 10px minmax(0, 1fr);
+      }
+
+      .source-status {
+        grid-column: 2;
+        width: max-content;
+      }
+
+      .destination-grid {
+        display: grid;
+      }
+
+      .modal-backdrop {
+        padding: 10px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <header class="site-header">
+    <div class="header-inner">
+      <div class="brand">
+        <img src="https://gregstyres.com.au/_next/image?url=%2Fbrand%20logos%2FTypeA-Service-Sponsorship-Logo.png&w=640&q=75" alt="Greg's Tyres and Mechanical logo">
+        <div class="brand-copy">
+          <span>Quote desk concept</span>
+          <strong>Greg's Tyres & Mechanical</strong>
+        </div>
+      </div>
+      <div class="header-status" aria-label="Connected systems">
+        <span class="status-pill">Marlin / Bridgestone</span>
+        <span class="status-pill">Supplier portals</span>
+        <span class="status-pill">Local stock</span>
+      </div>
+    </div>
+  </header>
+
+  <main class="page">
+    <section class="desk-head" aria-labelledby="page-title">
+      <div>
+        <h1 id="page-title">Tyre quote desk</h1>
+        <p>Enter the job once, compare the options, then publish the quote to the right places.</p>
+      </div>
+      <div class="save-indicator" id="saveIndicator">Quote status: <strong>Draft</strong></div>
+    </section>
+
+    <section class="desk">
+      <article class="panel" aria-labelledby="details-title">
+        <div class="panel-head">
+          <h2 id="details-title">Customer details</h2>
+          <p>Front desk input for the quote.</p>
+        </div>
+        <div class="panel-body">
+          <form class="form-grid" id="quoteForm">
+            <label>Customer name
+              <input id="customerName" autocomplete="name" value="Ben Taylor">
+            </label>
+
+            <label>Mobile
+              <input id="customerMobile" autocomplete="tel" value="0400 123 456">
+            </label>
+
+            <label>Vehicle or rego
+              <input id="vehicle" value="Toyota Hilux SR5">
+            </label>
+
+            <label>Tyre size
+              <select id="tyreSize">
+                <option>265/65R17</option>
+                <option>205/55R16</option>
+                <option>285/70R17</option>
+                <option>245/70R16</option>
+                <option>16.9-28</option>
+              </select>
+            </label>
+
+            <label>Driving or work type
+              <div class="choice-grid" role="group" aria-label="Driving or work type">
+                <button type="button" class="choice active" data-use="rural">Rural roads</button>
+                <button type="button" class="choice" data-use="daily">Daily driving</button>
+                <button type="button" class="choice" data-use="towing">4WD / towing</button>
+                <button type="button" class="choice" data-use="commercial">Commercial</button>
+                <button type="button" class="choice" data-use="field">Farm / field</button>
+                <button type="button" class="choice" data-use="budget">Basic replacement</button>
+              </div>
+            </label>
+
+            <label>Customer priority
+              <select id="priority">
+                <option value="value">Best value</option>
+                <option value="price">Lowest price</option>
+                <option value="today">Available today</option>
+                <option value="life">Longest life</option>
+                <option value="brand">Premium brand</option>
+              </select>
+            </label>
+
+            <label>Customer request
+              <textarea id="request">Needs a clear good-better-best quote and wants to book this week if stock is available.</textarea>
+            </label>
+
+            <button class="primary-btn" type="submit">Check options</button>
+          </form>
+
+          <div class="data-box" aria-labelledby="source-title">
+            <div class="data-title" id="source-title">Data sources</div>
+            <div id="sourceList"></div>
+          </div>
+        </div>
+      </article>
+
+      <div class="right-col">
+        <article class="panel" aria-labelledby="options-title">
+          <div class="panel-head">
+            <h2 id="options-title">Quote options</h2>
+            <p id="quoteContext">Ben Taylor - Toyota Hilux SR5, 265/65R17.</p>
+          </div>
+          <div class="quote-list" id="quoteOptions"></div>
+        </article>
+
+        <article class="panel" aria-labelledby="actions-title">
+          <div class="panel-head">
+            <h2 id="actions-title">Next actions</h2>
+            <p>Each action opens a full output preview with the destination systems shown.</p>
+          </div>
+          <div class="panel-body">
+            <div class="action-grid">
+              <button class="action-btn" type="button" data-action="publish">
+                <strong>Publish quote</strong>
+                <span>Internal DB, CRM, stock note</span>
+              </button>
+              <button class="action-btn" type="button" data-action="message">
+                <strong>Send customer message</strong>
+                <span>SMS / email quote preview</span>
+              </button>
+              <button class="action-btn" type="button" data-action="booking">
+                <strong>Create booking hold</strong>
+                <span>Job card and stock reservation</span>
+              </button>
+            </div>
+          </div>
+        </article>
+      </div>
+    </section>
+  </main>
+
+  <div class="modal-backdrop" id="modalBackdrop" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
+    <div class="modal">
+      <div class="modal-top">
+        <div>
+          <h2 id="modalTitle">Quote output</h2>
+          <p id="modalSubtitle">Preview of where the quote is sent.</p>
+        </div>
+        <button class="close-btn" type="button" id="closeModal" aria-label="Close quote preview">x</button>
+      </div>
+      <div class="modal-body" id="modalBody"></div>
+    </div>
+  </div>
+
+  <div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+  <script>
+    const products = [
+      {
+        label: "Recommended",
+        source: "Marlin / Bridgestone",
+        brand: "Bridgestone",
+        model: "Dueler A/T 697",
+        tier: "Premium",
+        fit: ["rural", "towing", "commercial"],
+        cost: 238,
+        margin: 0.34,
+        stock: "4 in local stock",
+        eta: "Available today",
+        reason: "Strong fit for Mudgee rural roads, 4WD use and customers who value known brands."
+      },
+      {
+        label: "Best value",
+        source: "Hankook supplier portal",
+        brand: "Hankook",
+        model: "Dynapro AT2",
+        tier: "Mid",
+        fit: ["rural", "daily", "commercial"],
+        cost: 184,
+        margin: 0.37,
+        stock: "8 from supplier",
+        eta: "Available tomorrow",
+        reason: "Good all-round option where the customer wants value without moving to the cheapest tyre."
+      },
+      {
+        label: "Budget option",
+        source: "Budget supplier",
+        brand: "Winrun",
+        model: "Maxclaw H/T",
+        tier: "Entry",
+        fit: ["daily", "budget"],
+        cost: 118,
+        margin: 0.44,
+        stock: "6 in local stock",
+        eta: "Available today",
+        reason: "Lowest upfront price where the job is a basic replacement and the customer is price-led."
+      },
+      {
+        label: "Long-life option",
+        source: "Michelin supplier portal",
+        brand: "Michelin",
+        model: "LTX Trail",
+        tier: "Premium",
+        fit: ["daily", "rural", "life"],
+        cost: 226,
+        margin: 0.31,
+        stock: "2 from supplier",
+        eta: "2 days",
+        reason: "A strong long-life option where comfort, tyre life and brand trust matter most."
+      },
+      {
+        label: "Heavy-use option",
+        source: "Toyo / Falken supplier portal",
+        brand: "Toyo",
+        model: "Open Country A/T III",
+        tier: "Premium",
+        fit: ["field", "towing", "commercial"],
+        cost: 246,
+        margin: 0.32,
+        stock: "Needs confirmation",
+        eta: "Check supplier",
+        reason: "Good candidate for harsh conditions, field use and heavy work, subject to live stock confirmation."
+      }
+    ];
+
+    const sources = [
+      ["Marlin / Bridgestone", "Vehicle record, Bridgestone products, quote history", "ready"],
+      ["Michelin supplier portal", "Supplier cost, stock level, ETA", "ready"],
+      ["Hankook supplier portal", "Supplier cost, stock level, ETA", "ready"],
+      ["Toyo / Falken supplier portal", "Alternative product options and heavy-use stock", "warn"],
+      ["Local stock", "On-hand count and same-day availability", "ready"]
+    ];
+
+    const state = {
+      use: "rural",
+      selectedId: 0,
+      checked: false,
+      quoteId: "GTQ-2048"
+    };
+
+    const els = {
+      customerName: document.getElementById("customerName"),
+      customerMobile: document.getElementById("customerMobile"),
+      vehicle: document.getElementById("vehicle"),
+      tyreSize: document.getElementById("tyreSize"),
+      priority: document.getElementById("priority"),
+      request: document.getElementById("request"),
+      quoteContext: document.getElementById("quoteContext"),
+      quoteOptions: document.getElementById("quoteOptions"),
+      sourceList: document.getElementById("sourceList"),
+      saveIndicator: document.getElementById("saveIndicator"),
+      modalBackdrop: document.getElementById("modalBackdrop"),
+      modalTitle: document.getElementById("modalTitle"),
+      modalSubtitle: document.getElementById("modalSubtitle"),
+      modalBody: document.getElementById("modalBody"),
+      toast: document.getElementById("toast")
+    };
+
+    function money(value) {
+      return "$" + Math.round(value).toLocaleString("en-AU");
+    }
+
+    function sell(product) {
+      return product.cost * (1 + product.margin);
+    }
+
+    function quoteTotal(product) {
+      return sell(product) * 4 + 140;
+    }
+
+    function priorityScore(product) {
+      if (els.priority.value === "price" && product.tier === "Entry") return 24;
+      if (els.priority.value === "today" && product.eta === "Available today") return 24;
+      if (els.priority.value === "life" && product.label.includes("Long")) return 24;
+      if (els.priority.value === "brand" && product.tier === "Premium") return 16;
+      if (els.priority.value === "value" && product.tier === "Mid") return 18;
+      return 0;
+    }
+
+    function fitScore(product) {
+      return product.fit.includes(state.use) ? 32 : 0;
+    }
+
+    function stockScore(product) {
+      if (product.eta === "Available today") return 18;
+      if (product.eta === "Available tomorrow") return 12;
+      if (product.eta === "2 days") return 7;
+      return -8;
+    }
+
+    function rankedProducts() {
+      return products
+        .map((product, index) => ({ ...product, id: index, score: Math.min(99, Math.max(35, 40 + fitScore(product) + priorityScore(product) + stockScore(product))) }))
+        .sort((a, b) => b.score - a.score);
+    }
+
+    function selectedProduct() {
+      return products[state.selectedId] || rankedProducts()[0];
+    }
+
+    function currentCustomer() {
+      return {
+        name: els.customerName.value.trim() || "Customer",
+        mobile: els.customerMobile.value.trim() || "No mobile entered",
+        vehicle: els.vehicle.value.trim() || "Vehicle",
+        size: els.tyreSize.value,
+        request: els.request.value.trim()
+      };
+    }
+
+    function renderSources() {
+      els.sourceList.innerHTML = sources.map(([name, detail, type]) => {
+        const status = state.checked ? (type === "warn" ? "review" : "checked") : "ready";
+        return `
+          <div class="source-row">
+            <span class="dot ${state.checked ? type : ""}"></span>
+            <div class="source-main"><strong>${name}</strong><span>${detail}</span></div>
+            <span class="source-status ${state.checked ? type : ""}">${status}</span>
+          </div>
+        `;
+      }).join("");
+    }
+
+    function renderOptions() {
+      const customer = currentCustomer();
+      const ranked = rankedProducts().slice(0, 3);
+      if (!ranked.some(product => product.id === state.selectedId)) {
+        state.selectedId = ranked[0].id;
+      }
+      els.quoteContext.textContent = `${customer.name} - ${customer.vehicle}, ${customer.size}.`;
+      els.quoteOptions.innerHTML = ranked.map((product, index) => {
+        const selected = product.id === state.selectedId;
+        const label = index === 0 ? "Recommended" : product.label;
+        return `
+          <article class="quote-card ${selected ? "selected" : ""}">
+            <div>
+              <span class="quote-label">${label}</span>
+              <h3>${product.brand} ${product.model}</h3>
+              <p>${product.reason}</p>
+              <div class="quote-meta">
+                <span class="pill green">${product.eta}</span>
+                <span class="pill">${product.stock}</span>
+                <span class="pill">${product.source}</span>
+                <span class="pill">${Math.round(product.margin * 100)}% margin</span>
+              </div>
+            </div>
+            <div class="price-block">
+              <span class="price">${money(sell(product))}</span>
+              <small>per tyre estimate</small>
+              <button class="select-btn" type="button" data-select="${product.id}">${selected ? "Selected" : "Select"}</button>
+            </div>
+          </article>
+        `;
+      }).join("");
+
+      document.querySelectorAll("[data-select]").forEach(button => {
+        button.addEventListener("click", () => {
+          state.selectedId = Number(button.dataset.select);
+          state.checked = true;
+          els.saveIndicator.innerHTML = "Quote status: <strong>Draft updated</strong>";
+          renderAll();
+          showToast("Quote option selected.");
+        });
+      });
+    }
+
+    function renderAll() {
+      renderSources();
+      renderOptions();
+    }
+
+    function chooseBest() {
+      state.checked = true;
+      state.selectedId = rankedProducts()[0].id;
+      els.saveIndicator.innerHTML = "Quote status: <strong>Options checked</strong>";
+      renderAll();
+    }
+
+    function appDestinations(type) {
+      const configs = {
+        publish: [
+          ["DB", "Internal quote DB", "Full quote record", "red"],
+          ["CRM", "Customer CRM", "Follow-up task", "blue"],
+          ["STK", "Stock note", "Availability saved", "green"],
+          ["MRL", "Marlin note", "Ready to copy/sync", ""]
+        ],
+        message: [
+          ["SMS", "Customer SMS", "Quote message ready", "green"],
+          ["EML", "Email", "Detailed quote copy", "blue"],
+          ["LNK", "Quote link", "Customer review page", "red"],
+          ["CRM", "Customer CRM", "Message logged", ""]
+        ],
+        booking: [
+          ["JOB", "Job card", "Booking hold created", "red"],
+          ["STK", "Stock list", "Tyres reserved", "green"],
+          ["CRM", "Customer CRM", "Booking reminder", "blue"],
+          ["MRL", "Marlin note", "Install notes ready", ""]
+        ]
+      };
+
+      return `
+        <div class="destination-grid">
+          ${configs[type].map(([icon, title, detail, color]) => `
+            <div class="destination">
+              <div class="app-icon ${color}">${icon}</div>
+              <div><strong>${title}</strong><span>${detail}</span></div>
+            </div>
+          `).join("")}
+        </div>
+      `;
+    }
+
+    function quoteDocument(type) {
+      const customer = currentCustomer();
+      const product = selectedProduct();
+      const tyreTotal = sell(product) * 4;
+      const fitting = 140;
+      const total = quoteTotal(product);
+      const statusCopy = {
+        publish: "Published quote record",
+        message: "Customer quote message",
+        booking: "Booking hold record"
+      };
+
+      return `
+        ${appDestinations(type)}
+        <div class="quote-document">
+          <div class="document-card">
+            <div class="document-section">
+              <h3>${statusCopy[type]} - ${state.quoteId}</h3>
+              <div class="detail-grid">
+                <div class="detail"><span>Customer</span><strong>${customer.name}</strong></div>
+                <div class="detail"><span>Mobile</span><strong>${customer.mobile}</strong></div>
+                <div class="detail"><span>Vehicle</span><strong>${customer.vehicle}</strong></div>
+                <div class="detail"><span>Tyre size</span><strong>${customer.size}</strong></div>
+              </div>
+            </div>
+            <div class="document-section">
+              <h3>Quote items</h3>
+              <table class="line-table">
+                <thead>
+                  <tr><th>Item</th><th>Qty</th><th>Each</th><th>Total</th></tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><strong>${product.brand} ${product.model}</strong><br>${product.source} | ${product.stock}</td>
+                    <td>4</td>
+                    <td>${money(sell(product))}</td>
+                    <td>${money(tyreTotal)}</td>
+                  </tr>
+                  <tr>
+                    <td>Fitting, balancing and disposal allowance</td>
+                    <td>1</td>
+                    <td>${money(fitting)}</td>
+                    <td>${money(fitting)}</td>
+                  </tr>
+                </tbody>
+              </table>
+              <div class="total-row"><span>Estimated total</span><span>${money(total)}</span></div>
+            </div>
+            <div class="document-section">
+              <h3>Internal notes</h3>
+              <p>${customer.request || "No extra customer request entered."}</p>
+              <p>Margin: ${Math.round(product.margin * 100)}%. Quote source: ${product.source}. Next stock action: ${product.eta === "Check supplier" ? "confirm supplier stock before sending" : "stock position acceptable for quote"}.</p>
+            </div>
+          </div>
+
+          <div class="message-card">
+            <h3>Customer-facing message</h3>
+            <div class="message-bubble">Hi ${customer.name}, Greg's Tyres has prepared your quote for ${customer.vehicle}.
+
+Recommended tyre: ${product.brand} ${product.model}
+Size: ${customer.size}
+Availability: ${product.eta}
+Estimate: ${money(total)} fitted for 4 tyres
+
+Reply YES and we can hold a booking time, or call the store if you want another option.</div>
+          </div>
+        </div>
+      `;
+    }
+
+    function openOutput(type) {
+      state.checked = true;
+      renderAll();
+      const titles = {
+        publish: ["Quote published", "Internal system, CRM and stock record preview."],
+        message: ["Customer message ready", "SMS, email and quote-link preview."],
+        booking: ["Booking hold created", "Job card, stock reservation and reminder preview."]
+      };
+      els.modalTitle.textContent = titles[type][0];
+      els.modalSubtitle.textContent = titles[type][1];
+      els.modalBody.innerHTML = quoteDocument(type);
+      els.modalBackdrop.classList.add("open");
+      els.saveIndicator.innerHTML = `Quote status: <strong>${titles[type][0]}</strong>`;
+      showToast(titles[type][0]);
+    }
+
+    function showToast(message) {
+      els.toast.textContent = message;
+      els.toast.classList.add("show");
+      window.clearTimeout(showToast.timer);
+      showToast.timer = window.setTimeout(() => els.toast.classList.remove("show"), 2200);
+    }
+
+    document.getElementById("quoteForm").addEventListener("submit", event => {
+      event.preventDefault();
+      chooseBest();
+      showToast("Supplier and stock options checked.");
+    });
+
+    document.querySelectorAll("[data-use]").forEach(button => {
+      button.addEventListener("click", () => {
+        document.querySelectorAll("[data-use]").forEach(item => item.classList.remove("active"));
+        button.classList.add("active");
+        state.use = button.dataset.use;
+        chooseBest();
+      });
+    });
+
+    [els.customerName, els.customerMobile, els.vehicle, els.tyreSize, els.priority, els.request].forEach(input => {
+      input.addEventListener("input", chooseBest);
+    });
+
+    document.querySelectorAll("[data-action]").forEach(button => {
+      button.addEventListener("click", () => openOutput(button.dataset.action));
+    });
+
+    document.getElementById("closeModal").addEventListener("click", () => {
+      els.modalBackdrop.classList.remove("open");
+    });
+
+    els.modalBackdrop.addEventListener("click", event => {
+      if (event.target === els.modalBackdrop) {
+        els.modalBackdrop.classList.remove("open");
+      }
+    });
+
+    document.addEventListener("keydown", event => {
+      if (event.key === "Escape") {
+        els.modalBackdrop.classList.remove("open");
+      }
+    });
+
+    state.selectedId = rankedProducts()[0].id;
+    renderAll();
+  </script>
+</body>
+</html>
